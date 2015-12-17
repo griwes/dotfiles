@@ -1,0 +1,6 @@
+[user]
+    name = Michał 'Griwes' Dominiak
+    email = griwes@griwes.info
+
+[alias]
+    setworkenvironment = !git config --global user.name 'Michał Dominiak' && git config --global user.email 'michal.dominiak@nokia.com'

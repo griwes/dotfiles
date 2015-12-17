@@ -1,0 +1,16 @@
+CheckHostIP yes
+HashKnownHosts yes
+VisualHostKey yes
+
+Protocol 2
+
+Host waterdeep wtd
+    HostName waterdeep.reaver-project.org
+    Port 22
+    User griwes
+
+Host home
+    HostName waterdeep.reaver-project.org
+    Port 19999
+    User griwes
+

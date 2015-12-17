@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+dot_dir=$(dirname $(readlink -f $BASH_SOURCE[0]))
+core_number=$(cat /proc/cpuinfo | grep -c processor)
+
+echo Creating directories...
+mkdir -p ~/.ssh
+
+echo Creating symlinks...
+ln -sf $dot_dir/vim/bootstrap.vim ~/.vimrc
+ln -sf $dot_dir/vim ~/.vim
+ln -sf $dot_dir/bash/bashrc ~/.bashrc
+ln -sf $dot_dir/tmux/tmux.conf ~/.tmux.conf
+ln -sf $dot_dir/tmux ~/.tmux
+ln -sf $dot_dir/git/config ~/.gitconfig
+ln -sf $dot_dir/ssh/config ~/.ssh/config
+
+echo Installing vim plugins...
+vim +PluginInstall +qall
+
+echo Building YCM...
+pushd $dot_dir/vim/bundle/YouCompleteMe >/dev/null
+mkdir -p build
+cd build
+cmake ../third_party/ycmd/cpp -DUSE_CLANG_COMPLETER=ON
+make -j$core_number ycm_support_libs
+popd >/dev/null
+
+echo Building color_coded...
+pushd $dot_dir/vim/bundle/color_coded >/dev/null
+mkdir -p build
+cd build
+cmake ..
+make -j$core_number && make install
+popd >/dev/null
+
+echo Compiling tmux config...
+cd $dot_dir/tmux
+make tmux.conf
+cd - >/dev/null
+
+echo Setup complete.
+

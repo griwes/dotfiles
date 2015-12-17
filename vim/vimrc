@@ -1,0 +1,43 @@
+" disable vi compatibility
+set nocompatible
+" check for modelines
+set modeline
+" enable faster and smoother drawing of console
+set ttyfast
+
+" clear all predefined autocmds
+autocmd!
+
+" runtime paths
+let s:vimrc_path = expand('<sfile>:p:h')
+let s:runtime_path = s:vimrc_path
+let s:bundle_path = s:vimrc_path . '/bundle'
+let s:rc_path = s:vimrc_path . '/rc'
+let &runtimepath = s:vimrc_path . ',' . &runtimepath
+let g:vimball_home = s:vimrc_path
+
+let $LOCAL_VIM_PATH = s:vimrc_path
+let $LOCAL_VIMRC = s:rc_path
+let $LOCAL_BUNDLE_PATH = s:bundle_path
+
+let s:backup_path = s:vimrc_path . '/backup'
+let s:swap_path = s:vimrc_path . '/swap'
+let s:undo_path = s:vimrc_path . '/undo'
+
+let $BACKUP_PATH = s:backup_path
+let $SWAP_PATH = s:swap_path
+let $UNDO_PATH = s:undo_path
+
+" vundle settings
+set runtimepath+=$LOCAL_BUNDLE_PATH/vundle
+
+" load configuration files
+let s:rc_files = split(glob(s:rc_path . '/*.vim'), '\n')
+for rc_file in s:rc_files
+    exec 'source ' . rc_file
+    unlet rc_file
+endfor
+
+" secure vimrc
+set secure
+
