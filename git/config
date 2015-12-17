@@ -4,3 +4,5 @@
 
 [alias]
     setworkenvironment = !git config --global user.name 'Michał Dominiak' && git config --global user.email 'michal.dominiak@nokia.com'
+[push]
+    default = simple
