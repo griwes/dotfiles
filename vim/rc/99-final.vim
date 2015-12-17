@@ -16,7 +16,7 @@ set list
 set listchars=tab:>.,trail:.,extends:#,nbsp:.
 
 " I like tagbar
-autocmd BufRead * :TagbarOpen
+autocmd VimEnter * nested :call tagbar#autoopen(1)
 
 " somehow indentlines tends to sometimes break...
 autocmd BufRead * :IndentLinesReset
