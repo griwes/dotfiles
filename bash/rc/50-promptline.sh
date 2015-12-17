@@ -2,11 +2,7 @@
 # This shell prompt config file was created by promptline.vim
 #
 function __promptline_host {
-  local only_if_ssh="0"
-
-  if [ ! $only_if_ssh -o -n "${SSH_CLIENT}" ]; then
-    if [[ -n ${ZSH_VERSION-} ]]; then print %m; elif [[ -n ${FISH_VERSION-} ]]; then hostname -s; else printf "%s" \\h; fi
-  fi
+  if [[ -n ${ZSH_VERSION-} ]]; then print %m; elif [[ -n ${FISH_VERSION-} ]]; then hostname -s; else printf "%s" \\h; fi
 }
 
 function __promptline_last_exit_code {
