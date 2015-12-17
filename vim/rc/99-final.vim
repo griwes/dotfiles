@@ -19,7 +19,7 @@ set listchars=tab:>.,trail:.,extends:#,nbsp:.
 autocmd VimEnter * nested :call tagbar#autoopen(1)
 
 " somehow indentlines tends to sometimes break...
-autocmd BufRead * :IndentLinesReset
+autocmd VimEnter * nested :IndentLinesReset
 
 " shell-like tab completion of commands
 set wildmenu
