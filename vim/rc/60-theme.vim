@@ -3,6 +3,7 @@ set t_Co=256
 
 " set colorscheme
 colorscheme jellybeans
+set background=light
 set background=dark
 
 highlight Normal ctermbg=NONE

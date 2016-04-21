@@ -2,10 +2,18 @@ CheckHostIP yes
 HashKnownHosts yes
 VisualHostKey yes
 
-Protocol 2
-
 Host waterdeep wtd
     HostName waterdeep.reaver-project.org
+    Port 22
+    User griwes
+
+Host znc
+    HostName znc.reaver-project.org
+    Port 22
+    User griwes
+
+Host ci
+    HostName ci.reaver-project.org
     Port 22
     User griwes
 
