@@ -39,5 +39,16 @@ cd $dot_dir/tmux
 make tmux.conf
 cd - >/dev/null
 
+echo Compiling tmux plugins...
+pushd $dot_dir/tmux >/dev/null
+git clone https://github.com/thewtex/tmux-mem-cpu-load
+cd tmux-mem-cpu-load
+mkdir -p build
+cd build
+cmake ..
+make
+ln -sf ${PWD}/tmux-mem-cpu-load ~/.tmux-mem-cpu-load
+popd
+
 echo Setup complete.
 
