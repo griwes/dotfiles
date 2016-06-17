@@ -1,6 +1,12 @@
 #
 # This shell prompt config file was created by promptline.vim
 #
+
+if [[ `tty` =~ /dev/tty[0-9]+ ]]
+then
+    return 0
+fi
+
 function __promptline_host {
   if [[ -n ${ZSH_VERSION-} ]]; then print %m; elif [[ -n ${FISH_VERSION-} ]]; then hostname -s; else printf "%s" \\h; fi
 }

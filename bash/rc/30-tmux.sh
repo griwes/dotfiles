@@ -4,10 +4,10 @@
 
 # modified to also do the same for local sessions
 
-export TERM=screen-256color
-
-if [[ -z "$TMUX" ]] && which tmux >& /dev/null
+if [[ -z "$TMUX" ]] && which tmux >& /dev/null && [[ `tty` =~ /dev/pts/[0-9]+ ]]
 then
+    export TERM=screen-256color
+
     if ! tmux ls -F '#{session_name}' | grep "^ssh-$USER$" > /dev/null
     then
         tmux new-session -s tmux-$USER \; detach
