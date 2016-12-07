@@ -1,6 +1,9 @@
 " enable syntax
 syntax on
 
+" shell
+set shell=/bin/bash
+
 " set proper numbering
 set number
 set relativenumber
@@ -75,4 +78,7 @@ augroup resCur
   autocmd!
   autocmd BufWinEnter * call ResCur()
 augroup END
+
+" search for tags file up to /
+set tags=tags;/
 
