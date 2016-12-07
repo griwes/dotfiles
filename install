@@ -20,10 +20,8 @@ vim +PluginInstall +qall
 
 echo Building YCM...
 pushd $dot_dir/vim/bundle/YouCompleteMe >/dev/null
-mkdir -p build
-cd build
-cmake ../third_party/ycmd/cpp -DUSE_CLANG_COMPLETER=ON
-make -j$core_number ycm_support_libs
+git submodule update --init --recursive
+./install.py --clang-completer
 popd >/dev/null
 
 echo Building color_coded...
