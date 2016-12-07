@@ -28,3 +28,6 @@ inoremap <C-s> <C-o>:write<CR>
 set pastetoggle=<F2>
 map <leader>p <F2>
 
+" ClangFormat
+noremap <C-k> :ClangFormat<CR>
+

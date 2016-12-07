@@ -25,3 +25,6 @@ autocmd VimEnter * nested :IndentLinesReset
 set wildmenu
 set wildmode=list:longest
 
+" auto-clang-format
+autocmd FileType cpp ClangFormatAutoEnable
+
