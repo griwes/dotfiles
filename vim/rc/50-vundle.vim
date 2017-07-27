@@ -17,12 +17,12 @@ Plugin 'jeaye/color_coded'
 Plugin 'hallison/vim-markdown'
 Plugin 'indenthtml.vim'
 Plugin 'rhysd/vim-clang-format'
+Plugin 'udalov/kotlin-vim'
+Plugin 'derekwyatt/vim-scala'
+Plugin 'ensime/ensime-vim'
 
 " files and movement
 Plugin 'tpope/vim-unimpaired'
-Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'ivalkeen/vim-ctrlp-tjump'
-Plugin 'FelikZ/ctrlp-py-matcher'
 Plugin 'craigemery/vim-autotag'
 Plugin 'camelcasemotion'
 Plugin 'terryma/vim-multiple-cursors'
@@ -30,15 +30,18 @@ Plugin 'a.vim'
 Plugin 'gcmt/wildfire.vim'
 Plugin 'easymotion/vim-easymotion'
 
+" fzf
+set rtp+=~/.fzf
+Plugin 'junegunn/fzf.vim'
+
 " additional tools
 Plugin 'bling/vim-airline'
 Plugin 'junegunn/rainbow_parentheses.vim'
 Plugin 'SirVer/ultisnips'
 Plugin 'majutsushi/tagbar'
-Plugin 'scrooloose/nerdtree'
 Plugin 'scrooloose/nerdcommenter'
 Plugin 'godlygeek/tabular'
-Plugin 'mhinz/vim-startify'
+" Plugin 'mhinz/vim-startify' " startify seems to confuse fzf.vim
 Plugin 'ntpeters/vim-better-whitespace'
 Plugin 'mbbill/undotree'
 Plugin 'Yggdroot/indentLine'
@@ -51,7 +54,6 @@ Plugin 'tpope/vim-characterize'
 Plugin 'tpope/vim-abolish'
 
 " shell and tmux
-Plugin 'edkolev/promptline.vim'
 Plugin 'edkolev/tmuxline.vim'
 
 call vundle#end()

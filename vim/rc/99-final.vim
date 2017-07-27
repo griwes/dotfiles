@@ -26,5 +26,6 @@ set wildmenu
 set wildmode=list:longest
 
 " auto-clang-format
+let g:clang_format#detect_style_file = 1
 autocmd FileType cpp ClangFormatAutoEnable
 
