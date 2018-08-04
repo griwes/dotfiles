@@ -3,18 +3,17 @@
     email = griwes@griwes.info
 
 [alias]
-    setworkenvironment = !git config --global user.name 'Michał Dominiak' && git config --global user.email 'michal.dominiak@nokia.com'
     ri = rebase -i --autosquash
     mri = rebase -i
     fix = commit --fixup
     squ = commit --squash
-	d = difftool
+    d = difftool
 
 [push]
     default = simple
 [cola]
-	spellcheck = false
+    spellcheck = false
 [diff]
-	tool = vimdiff
+    tool = vimdiff
 [difftool]
-	prompt = false
+    prompt = false
