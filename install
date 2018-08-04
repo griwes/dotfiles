@@ -50,6 +50,10 @@ make
 ln -sf ${PWD}/tmux-mem-cpu-load ~/.tmux-mem-cpu-load
 popd
 
+echo Installing fzf...
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+
 echo Installing OMF...
 curl -L https://get.oh-my.fish | fish
 echo omf theme dangerous | fish
