@@ -15,6 +15,7 @@ ln -sf $dot_dir/tmux ~/.tmux
 ln -sf $dot_dir/git/config ~/.gitconfig
 ln -sf $dot_dir/ssh/config ~/.ssh/config
 ln -sf $dot_dir/i3 ~/.config/i3
+ln -sf $dot_dir/termite ~/.config/termite
 
 echo Installing vim plugins...
 vim +PluginInstall +qall
