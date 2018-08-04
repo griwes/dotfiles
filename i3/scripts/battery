@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+# Show battery percentage and status in i3bar.
+# Change the color with the percentage and display low battery notifications.
+# Clicking on the icon shows amount of time remaining/time until charged.
+
+# To be used with FontAwesome
+
+source ~/.config/i3/scripts/common.sh
+
+BATTERY_ID=$(acpi -b -i | grep "design capacity" | awk 'BEGIN { FS = ":" } { print $1 }')
+
+POWER=$(acpi -b | grep "${BATTERY_ID}")
+if [[ "$POWER" == "" ]]; then
+        exit 1
+fi
+STATE=$(echo $POWER | cut -d : -f 2 | cut -d , -f 1 | tr '[:upper:]' '[:lower:]' \
+        | sed 's/[[:space:]]//g')
+PERCENTAGE=$(echo $POWER | grep -o '[^ ]*%' | grep -o '[0-9]*')
+REMAINING=$(echo $POWER | cut -d % -f 2 | cut -d , -f 2 | sed -e 's/^[[:space:]]*//')
+
+if [[ "$STATE" == "charging" ]]; then
+        if [[ "$PERCENTAGE" -lt "20" ]]; then
+                SYMBOL=""
+                COLOR=$RED
+        elif [[ "$PERCENTAGE" -lt "40" ]]; then
+                SYMBOL=""
+                COLOR=$ORANGE
+        elif [[ "$PERCENTAGE" -lt "60" ]]; then
+                SYMBOL=""
+                COLOR=$YELLOW
+        elif [[ "$PERCENTAGE" -lt "80" ]]; then
+                SYMBOL=""
+                COLOR=$GREEN
+        else
+                SYMBOL=""
+                COLOR=$BLUE
+        fi
+elif [[ "$STATE" == "discharging" ]]; then
+        if [[ "$PERCENTAGE" -lt "20" ]]; then
+                SYMBOL=""
+                COLOR=$RED
+                if [[ "$PERCENTAGE" -lt 5 ]]; then
+                    notify-send -t 1000 -i ~/.config/i3/icons/low-battery.png 'Battery Low'
+                fi
+        elif [[ "$PERCENTAGE" -lt "40" ]]; then
+                SYMBOL=""
+                COLOR=$ORANGE
+        elif [[ "$PERCENTAGE" -lt "60" ]]; then
+                SYMBOL=""
+                COLOR=$YELLOW
+        elif [[ "$PERCENTAGE" -lt "80" ]]; then
+                SYMBOL=""
+                COLOR=$GREEN
+        else
+                SYMBOL=""
+                COLOR=$BLUE
+        fi
+elif [[ "$STATE" == "full" ]]; then
+        SYMBOL=""
+        COLOR=$BLUE
+else
+        SYMBOL=""
+        COLOR=$YELLOW
+fi
+
+if [[ -n "${REMAINING}" ]]; then
+    REMAINING_PARENS=" (${REMAINING})"
+fi
+
+echo "$SYMBOL ${PERCENTAGE}%${REMAINING_PARENS}"
+echo $SYMBOL
+echo $COLOR
+

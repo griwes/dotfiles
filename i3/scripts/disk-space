@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+source ~/.config/i3/scripts/common.sh
+
+MOUNTPOINT=$1
+DF_LINE=$(df -h | awk '$6 == "'${MOUNTPOINT}'" { print; }')
+FREE=$(echo $DF_LINE | awk '{ print $4; }')
+USED=$(echo $DF_LINE | awk '{ print $3; }')
+TOTAL=$(echo $DF_LINE | awk '{ print $2; }')
+PERCENTAGE=$(echo $DF_LINE | awk '{ print $5; }')
+
+PERCNUM=$(echo $PERCENTAGE | tr -d '%')
+if [[ $PERCNUM -lt 10 ]]; then
+        COLOR=$RED
+elif [[ $PERCNUM -lt 30 ]]; then
+        COLOR=$ORANGE
+fi
+
+echo "$MOUNTPOINT: $PERCENTAGE ($FREE free)"
+echo $COLOR
+

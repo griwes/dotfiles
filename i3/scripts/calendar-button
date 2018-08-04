@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+echo $(date "+%A, %B %d, %Y %I:%M:%S %p")
+if [[ $BLOCK_BUTTON == '1' ]]; then
+        xdg-open https://www.google.com/calendar
+fi

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# If ethernet is connected, show symbol as green.
+# If it's not connected, show it as red. If it's dormant, show as yellow.
+
+source ~/.config/i3/scripts/common.sh
+
+eth_state="$(cat /sys/class/net/eth0/operstate)"
+
+if [[ "$eth_state" == "up" ]]; then
+        echo "eth0 up"
+        echo "eth0 up"
+        echo "$GREEN"
+elif [[ "$eth_state" == "dormant" ]]; then
+        echo "eth0 dormant"
+        echo "eth0 dormant"
+        echo "$YELLOW"
+elif [[ "$eth_state" == "down" ]]; then
+        echo "eth0 down"
+        echo "eth0 down"
+        echo "$RED"
+fi
+
+ip_addr=`echo "IP: "$(hostname -I)`
+current_mac=`echo "MAC: "$(ifconfig eth0 | head -1 | sed -e 's/.*HWaddr //')`
+
+if [[ $BLOCK_BUTTON == '1' ]]; then
+        notify-send "`echo -e $ip_addr'\n'$current_mac`"
+fi
+

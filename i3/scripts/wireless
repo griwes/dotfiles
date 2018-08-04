@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+# If WiFi is connected, show the WiFi symbol as green.
+# If it's disconnected, show it as red. If dormannt, as yellow.
+
+if ! [ -f /sys/class/net/wlp3s0/operstate ]; then
+        exit 0
+fi
+wlan_state="$(cat /sys/class/net/wlp3s0/operstate)"
+
+SSID=`/sbin/iwconfig wlp3s0 | grep ESSID | sed -re 's/.*ESSID:"(.*)".*/\1/' | tr -d ' '`
+FREQ=`/sbin/iwconfig wlp3s0 | grep Frequency | sed -re 's/.*Frequency:([0-9.]+) GHz.*' | td -d ' '`
+LOCAL_IP=`/sbin/ifconfig wlp3s0 | grep 'inet ' | sed -re 's/.*inet (([0-9]{1,3}\.){3}[0-9]{1,3}).*/\1/'`
+if [[ $BLOCK_BUTTON == '1' ]]; then
+        notify-send "`echo -e 'SSID: ' $SSID'\nFrequency: ' $FREQ'\nLocal IP: '$LOCAL_IP`" \
+                -i /usr/share/icons/Numix-Light/48x48/apps/networkmanager.svg
+fi
+
+if [ "$wlan_state" = "up" ]; then
+        echo " $SSID ($LOCAL_IP)"
+        echo " $SSID ($LOCAL_IP)"
+        echo "#5FF442"
+elif [ "$wlan_state" = "down" ]; then
+        echo ""
+        echo ""
+        echo "#F4EB42"
+elif [ "$wlan_state" = "dormant" ]; then
+        echo ""
+        echo ""
+        echo "#F99157"
+fi
+

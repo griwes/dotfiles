@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Create a short delay so changes in brightness can be registered
+sleep 0.5
+
+# Get the brightness percentage:
+BRIGHTNESS_VALUE=$(xbacklight -get)
+
+# Round the brightness percentage:
+LC_ALL=C
+BRIGHTNESS_VALUE=$(printf "%.*f\n" 0 $BRIGHTNESS_VALUE)
+
+# Kill previous notifications so the brightness notifications don't pile up:
+killall -q xfce4-notifyd
+
+BRIGHTNESS="Brightness"
+
+# Send the notification with the icon:
+notify-send `echo $BRIGHTNESS: $BRIGHTNESS_VALUE` \
+        -t 1000 -i ~/.i3/icons/brightness-icon.png

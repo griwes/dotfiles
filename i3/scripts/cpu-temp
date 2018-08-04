@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+source ~/.config/i3/scripts/common.sh
+
+#ICON="🌡"
+ICON="CPU Temp: "
+
+TEMP=$(echo -e `acpi -t | grep -oP '\d+\\d+'`)
+if [[ $TEMP -lt 20 ]]; then
+    COLOR=$BLUE
+elif [[ $TEMP -lt 40 ]]; then
+    COLOR=$GREEN
+elif [[ $TEMP -lt 60 ]]; then
+    COLOR=$YELLOW
+elif [[ $TEMP -lt 80 ]]; then
+    COLOR=$ORANGE
+else
+    COLOR=$RED
+fi
+
+echo "$ICON$TEMP°C"
+echo "$ICON$TEMP°C"
+echo $COLOR
+

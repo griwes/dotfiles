@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+AVAIL=$(free -h G | grep "Mem:" | awk '{ print $7; }')
+USED=$(free -h G | grep "Mem:" | awk '{ print $3; }')
+TOTAL=$(free -h G | grep "Mem:" | awk '{ print $2; }')
+
+echo "RAM: ${USED}/${TOTAL}"
+echo "RAM: ${USED}/${TOTAL}"
+
+AVAILNUM=$(echo $AVAIL | tr -d 'G')
+TOTALNUM=$(echo $TOTAL | tr -d 'G')
+
+if [[ $AVAILNUM -lt $((TOTALNUM / 4)) ]]; then
+    echo "#F99157"
+elif [[ $AVAILNUM -lt $((TOTALNUM / 2 )) ]]; then
+    echo "#F4EB42"
+else
+    echo "#5FF442"
+fi
+
