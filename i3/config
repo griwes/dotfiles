@@ -157,11 +157,10 @@ bar {
 }
 
 # autostart
-exec --no-startup-id ~/.feh-rotate
+exec --no-startup-id ~/dotfiles/scripts/feh-rotate
 exec --no-startup-id compton -b --config ~/.config/i3/compton.conf
 exec --no-startup-id redshift
 exec --no-startup-id dropbox start
-exec --no-startup-id autossh -M 20000 -N griwes@luskan.reaver-project.org -R '*':19999:localhost:22 -C -f
 exec --no-startup-id keynav
 
 # bind volume control

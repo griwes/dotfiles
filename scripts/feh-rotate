@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+while true
+do
+    feh -z --bg-scale ~/Pictures/wallpapers/*.png
+    sleep 5m
+done
+
