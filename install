@@ -48,5 +48,9 @@ make
 ln -sf ${PWD}/tmux-mem-cpu-load ~/.tmux-mem-cpu-load
 popd
 
+echo Installing OMF...
+curl -L https://get.oh-my.fish | fish
+echo omf theme dangerous | fish
+
 echo Setup complete.
 

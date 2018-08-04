@@ -21,3 +21,6 @@ inoremap <C-@> <C-Space>
 " enter in the quickfix window doesn't focus the new buffer
 au BufReadPost quickfix noremap <C-cr> <cr><c-w>p
 
+" allow quick fixits
+map <F9> :YcmCompleter FixIt<CR>
+

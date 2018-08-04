@@ -8,6 +8,13 @@
     mri = rebase -i
     fix = commit --fixup
     squ = commit --squash
+	d = difftool
 
 [push]
     default = simple
+[cola]
+	spellcheck = false
+[diff]
+	tool = vimdiff
+[difftool]
+	prompt = false
