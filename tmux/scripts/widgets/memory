@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+
+window_width=$(tmux display-message -p '#{window_width}')
+if [[ "${window_width}" -lt 150 ]]
+then
+    blocks=4
+elif [[ "${window_width}" -lt 200 ]]
+then
+    blocks=8
+else
+    blocks=16
+fi
+
+vertical_blocks=( " " "▏" "▎" "▍" "▌" "▋" "▊" "▉" "█" )
+horizontal_blocks=(" " "▁" "▂" "▃" "▄" "▅" "▆" "▇" "█")
+
+meminfo=$(cat /proc/meminfo)
+
+read_metric() {
+    read metric metric_unit <<<$(echo "${meminfo}" | grep "$1" | awk -F':' '{ print $2 }')
+
+    case "${metric_unit}"
+    in
+        kB)
+            metric=$((metric * 1024))
+            ;;
+
+        *)
+            echo "unknown metric unit in /proc/meminfo: ${metric_unit}"
+            exit 1
+    esac
+
+    echo "${metric}"
+}
+
+# display swap usage
+
+swap_total=$(read_metric SwapTotal)
+swap_free=$(read_metric SwapFree)
+swap_used=$((${swap_total} - ${swap_free}))
+
+swap_palette=$((${swap_free} * 10 / ${swap_total}))
+swap_block=${horizontal_blocks[$((${swap_used} * 8 / ${swap_total}))]}
+swap_pct=$((${swap_used} * 100 / ${swap_total}))
+
+if [[ "${window_width}" -lt 200 ]]
+then
+    printf "S:#[fg=#{E:@percent-palette-%s}]%s#[#{E:@inactive-style}]" "${swap_palette}" "${swap_block}"
+else
+    printf "SW: #[fg=#{E:@percent-palette-%s}]%s %s%% #[#{E:@inactive-style}]" "${swap_palette}" "${swap_block}" "${swap_pct}"
+fi
+
+# display RAM usage
+
+mem_total_format_length=$(awk "BEGIN { printf \"%.1f\", $(read_metric MemTotal) / (1024 * 1024 * 1024); }" | wc -c)
+short_total_format_length=$(awk "BEGIN { printf \"%.0f\", $(read_metric MemTotal) / (1024 * 1024 * 1024); }" | wc -c)
+
+format_value() {
+    if [[ "${window_width}" -lt 200 ]]
+    then
+        echo "$(awk "BEGIN { printf \"%${short_total_format_length}.0fG\", $1 / (1024 * 1024 * 1024); }")"
+    else
+        echo "$(awk "BEGIN { printf \"%${mem_total_format_length}.1f GB\", $1 / (1024 * 1024 * 1024); }")"
+    fi
+}
+
+total=$(read_metric MemTotal)
+free=$(read_metric MemFree)
+cached=$(read_metric Cached)
+buffers=$(read_metric Buffers)
+shmem=$(read_metric Shmem)
+sreclaimable=$(read_metric SReclaimable)
+
+buf_cached=$((${cached} + ${buffers} + ${sreclaimable} - ${shmem}))
+used=$((${total} - ${free} - ${buf_cached}))
+
+memory_per_block=$((${total} / ${blocks}))
+
+steps_per_block=8
+memory_per_step=$((${memory_per_block} / ${steps_per_block}))
+
+used_=${used}
+
+available=$(read_metric MemAvailable)
+
+ram_palette=$((${available} * 10 / ${total}))
+
+if [[ "${window_width}" -lt 150 ]]
+then
+    printf " M:[#[fg=#{E:@percent-palette-%s}]" "${ram_palette}"
+else
+    printf " MEM: [#[fg=#{E:@percent-palette-%s}]" "${ram_palette}"
+fi
+
+while [[ ${blocks} -ne 0 ]]
+do
+    blocks=$((${blocks} - 1))
+
+    if [[ ${used} -gt ${memory_per_block} ]]
+    then
+        printf "${vertical_blocks[8]}"
+        used=$((${used} - ${memory_per_block}))
+        continue
+    fi
+
+    if [[ ${used} -eq 0 && ${buf_cached} -ne 0 ]]
+    then
+        if [[ ${buf_cached} -gt ${memory_per_block} ]]
+        then
+            printf " "
+            buf_cached=$((${buf_cached} - ${memory_per_block}))
+        else
+            printf "|"
+            buf_cached=0
+        fi
+
+        continue
+    fi
+
+    buf_cached=$((${buf_cached} + ${used}))
+    printf "${vertical_blocks[$((${used} / ${memory_per_step}))]}"
+
+    used=0
+done
+
+if [[ "${window_width}" -lt 150 ]]
+then
+    printf "#[#{E:@inactive-style}]] %s/%s" "$(format_value ${used_})" "$(format_value ${total})"
+else
+    printf "#[#{E:@inactive-style}]] %s / %s" "$(format_value ${used_})" "$(format_value ${total})"
+fi
+

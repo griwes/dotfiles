@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+current_dir=$(dirname $(realpath -s "${BASH_SOURCE[0]}"))
+if [[ $(nice) -ne -15 ]]
+then
+    sudo -n nice -n-15 sudo -u ${USER} ~/.tmux/scripts/status 2>/dev/null
+    if [[ $? -eq 0 ]]
+    then
+        exit 0
+    fi
+fi
+
+window_width=$(tmux display-message -p '#{window_width}')
+center_point=$((${window_width} / 2))
+
+process_section() {
+    section=""
+
+    widgets=($(tmux display-message -p "#{E:@tmux-status-$1}"))
+    for widget in ${widgets[@]}
+    do
+        section="${section} #[#{E:@inactive-style}]$(${current_dir}/widgets/${widget})#[#{E:@default-style}] "
+    done
+
+    echo "${section}"
+}
+
+unformatted_width() {
+    printf "%s" "${1}" | sed 's/#\[[^]]*\]//g' | wc -m
+}
+
+insert_padding() {
+    left_width=$(unformatted_width "${1}")
+    center_width=$(unformatted_width "${2}")
+    right_width=$(unformatted_width "${3}")
+
+    half_center=$((${center_width} / 2))
+
+    left_pad=$((${center_point} - ${left_width} - ${half_center}))
+    right_pad=$((${center_point} - ${right_width} - ${half_center} - ${center_width} % 2 + ${window_width} % 2))
+
+    printf "%s%*s%s%*s%s" \
+        "${1}" \
+        "${left_pad}" "" \
+        "${2}" \
+        "${right_pad}" "" \
+        "${3}"
+}
+
+status_resize() {
+    if [[ "$(tmux display-message -p '#{status}')" -ne "${1}" ]]
+    then
+        tmux set -w 'status' "${1}"
+
+        tmux set -g '@tmux-status-1' ""
+        tmux set -g '@tmux-status-2' ""
+        tmux set -g '@tmux-status-3' ""
+        tmux set -g '@tmux-status-4' ""
+    fi
+}
+
+status_top_center=$(process_section 'top-center')
+status_bottom_center=$(process_section 'bottom-center')
+status_top_left=$(process_section 'top-left')
+status_top_right=$(process_section 'top-right')
+status_bottom_left=$(process_section 'bottom-left')
+status_bottom_right=$(process_section 'bottom-right')
+
+top_line="$(insert_padding "${status_top_left}" "${status_top_center}" "${status_top_right}")"
+bottom_line="$(insert_padding "${status_bottom_left}" "${status_bottom_center}" "${status_bottom_right}")"
+top_characters=$(unformatted_width "${top_line}")
+bottom_characters=$(unformatted_width "${bottom_line}")
+
+if [[ "${top_characters}" -le "${window_width}" && "${bottom_characters}" -le "${window_width}" ]]
+then
+    status_resize 3
+
+    tmux set -g '@tmux-status-1' "${top_line}"
+    tmux set -g '@tmux-status-2' "${bottom_line}"
+    tmux set -g '@tmux-status-3' ""
+    tmux set -g '@tmux-status-4' ""
+else
+    status_resize 5
+
+    tmux set -g '@tmux-status-1' "#[align=centre]${status_top_center}"
+    tmux set -g '@tmux-status-2' "#[align=centre]${status_bottom_center} "
+    tmux set -g '@tmux-status-3' "#[align=left]${status_top_left}#[align=right]${status_top_right}"
+    tmux set -g '@tmux-status-4' "#[align=left]${status_bottom_left}#[align=right]${status_bottom_right}"
+fi
+
+${current_dir}/status-top
+

@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+window_width=$(tmux display-message -p '#{window_width}')
+cpus=$(nproc)
+
+format_value() {
+    if [[ "${window_width}" -lt 150 ]]
+    then
+        format="%.0f"
+    elif [[ "${window_width}" -lt 200 ]]
+    then
+        format="%.1f"
+    else
+        format="%.2f"
+    fi
+
+    palette_index=$(printf "%.0f" $(awk "BEGIN { print (${cpus} * 1.2 - $1) * 10 / (${cpus} * 1.2); }"))
+    if [[ "${palette_index}" -le 0 ]] # less or equal to deal with `-0`
+    then
+        palette_index=0
+    fi
+
+    printf "#[fg=#{E:@percent-palette-${palette_index}}]${format}#[#{E:@inactive-style}]" "$1"
+}
+
+read la1 la5 la15 rest <<<$(cat /proc/loadavg)
+if [[ "${window_width}" -lt 150 ]]
+then
+    printf "LA: %s" "$(format_value "${la1}")"
+elif [[ "${window_width}" -lt 200 ]]
+then
+    printf "LA: %s %s" "$(format_value "${la1}")" "$(format_value "${la5}")"
+else
+    printf "LA: %s %s %s" "$(format_value "${la1}")" "$(format_value "${la5}")" "$(format_value "${la15}")"
+fi
+

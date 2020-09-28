@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+current_dir=$(dirname $(realpath -s "${BASH_SOURCE[0]}"))
+
+set -e
+
+"${current_dir}/common/read-ac-status" \
+    | while read line
+do
+    IFS=':' read name is_on <<<"${line}"
+
+    if [ "${is_on}" -eq 0 ]
+    then
+        inactive="in"
+        description="OFF"
+    else
+        inactive=""
+        description="ON"
+    fi
+
+    printf "#[#{E:@%sactive-style}] %s: %s #[#{E:@default-style}]" "${inactive}" "${name}" "${description}"
+done
+
+"${current_dir}/common/read-battery-status" \
+    | while read line
+do
+    IFS=':' read name mode capacity time_left <<<"${line}"
+
+    color_index=$(printf "%.0f" $(awk "BEGIN { print ${capacity} * 10 - 0.5; }"))
+    capacity=$(awk "BEGIN { print ${capacity} * 100; }")
+    time_left_hm=$(awk "BEGIN { printf \"%d:%02d h \", ${time_left} / 60, ${time_left} % 60; }")
+
+    style="#[fg=#{E:@percent-palette-${color_index}},bold]"
+    case "${mode}"
+    in
+        1)
+            description="DIS "
+            style="#[fg=#121212,bg=#{E:@percent-palette-${color_index}},bold]"
+            ;;
+
+        2)
+            description="CHG "
+            ;;
+
+        *)
+            description=""
+            time_left_hm=""
+            ;;
+    esac
+
+    printf " %s %s: %s%.0f%% %s#[#{E:@default-style}]" "${style}" "${name}" "${description}" "${capacity}" "${time_left_hm}"
+done
+

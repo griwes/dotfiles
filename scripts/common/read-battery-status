@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+current_dir=$(dirname $(realpath -s "${BASH_SOURCE[0]}"))
+acpi_dir=$("${current_dir}/find-acpi")
+
+if [ $? -ne 0 ]
+then
+    echo "${acpi_dir}"
+    exit 1
+fi
+
+set -e
+
+for dir in ${acpi_dir}/drivers/battery/*
+do
+    if [ ! -L "${dir}" ]
+    then
+        continue
+    fi
+
+    for battery in ${dir}/power_supply/*
+    do
+        battery_name=$(basename "${battery}")
+        battery_status=$(cat "${battery}/status")
+        if echo "${battery_status}" | grep -qi "discharging"
+        then
+            mode=1
+        elif echo "${battery_status}" | grep -qi "charging"
+        then
+            mode=2
+        else
+            mode=0
+        fi
+
+        power_usage=$(cat "${battery}/power_now")
+        energy=$(cat "${battery}/energy_now")
+        energy_full=$(cat "${battery}/energy_full")
+
+        capacity=$(awk "BEGIN { print ${energy}/${energy_full} }")
+        if [ "${power_usage}" -ne 0 ]
+        then
+            case "${mode}"
+            in
+                1) # discharging
+                    time_to_x=$(awk "BEGIN { print (${energy}/${power_usage})*60 }")
+                    ;;
+
+                2) # charging
+                    time_to_x=$(awk "BEGIN { print ((${energy_full}-${energy})/${power_usage})*60 }")
+                    ;;
+
+                *)
+                    ;;
+            esac
+        else
+            time_to_x=0
+        fi
+
+        printf "%s:%s:%s:%s\n" "${battery_name}" "${mode}" "${capacity}" "${time_to_x}"
+    done
+done
+

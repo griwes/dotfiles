@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+window_width=$(tmux display-message -p '#{window_width}')
+if [[ "${window_width}" -lt 150 ]]
+then
+    echo "$(uname -s) $(uname -r | awk -F'-' '{ print $1 }')"
+else
+    uname -sr
+fi

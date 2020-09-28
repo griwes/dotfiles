@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+tmux display-message -p '#[#{E:@active-style}] S: #{session_name} #[#{E:@default-style}]'

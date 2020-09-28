@@ -1,62 +1,78 @@
 #!/usr/bin/env bash
 
+set -e
+
+if [[ "${USER}" != "griwes" && "${USER}" != "mdominiak" && "${GRIWES_DOTFILES_DISREGARD_USERNAME}" -ne 1 ]]
+then
+    echo "You are (probably) not griwes."
+    echo "Please take some time reading through this script to avoid surprises."
+    echo "Also remember to, at the very least, change the git config..."
+    exit 1
+fi
+
+do_which() {
+    if ! which $1 >/dev/null
+    then
+        echo "$1 not installed! Make sure you have: nvim, pip3, git, tmux, zsh."
+        exit 1
+    fi
+}
+
+do_which nvim
+do_which pip3
+do_which git
+do_which tmux
+do_which zsh
+
 dot_dir=$(dirname $(readlink -f $BASH_SOURCE[0]))
-core_number=$(cat /proc/cpuinfo | grep -c processor)
 
-echo Creating directories...
-mkdir -p ~/.ssh
+set -x
 
-echo Creating symlinks...
-ln -sf $dot_dir/vim/bootstrap.vim ~/.vimrc
-ln -sf $dot_dir/vim ~/.vim
-ln -sf $dot_dir/bash/bashrc ~/.bashrc
-ln -sf $dot_dir/tmux/tmux.conf ~/.tmux.conf
-ln -sf $dot_dir/tmux ~/.tmux
-ln -sf $dot_dir/git/config ~/.gitconfig
-ln -sf $dot_dir/ssh/config ~/.ssh/config
-ln -sf $dot_dir/i3 ~/.config/i3
-ln -sf $dot_dir/termite ~/.config/termite
+echo Configuring git...
+ln -sfn "${dot_dir}/git/config" ~/.gitconfig
 
-echo Installing vim plugins...
-vim +PluginInstall +qall
+echo Configuring i3...
+ln -sfn "${dot_dir}/i3" ~/.config/i3
 
-echo Building YCM...
-pushd $dot_dir/vim/bundle/YouCompleteMe >/dev/null
-git submodule update --init --recursive
-./install.py --clang-completer
-popd >/dev/null
+pip3 install --user i3-workspace-groups
 
-echo Building color_coded...
-pushd $dot_dir/vim/bundle/color_coded >/dev/null
-mkdir -p build
-cd build
-cmake ..
-make -j$core_number && make install
-popd >/dev/null
+echo Configuring polybar...
+ln -sfn "${dot_dir}/polybar" ~/.config/polybar
 
-echo Compiling tmux config...
-cd $dot_dir/tmux
+echo Configuring nvim...
+ln -sfn "${dot_dir}/nvim" ~/.config/nvim
+
+pip3 install --user pynvim python-language-server
+nvim +PlugInstall +qall
+nvim +UpdateRemotePlugins +qall
+
+echo Configuring ssh...
+ln -sfn "${dot_dir}/ssh/config" ~/.ssh/config
+mkdir -p ~/.ssh/cm_sockets
+
+echo Configuring termite...
+ln -sfn "${dot_dir}/termite" ~/.config/termite
+
+echo Configuring tmux...
+ln -sfn "${dot_dir}/tmux/tmux.conf" ~/.tmux.conf
+ln -sfn "${dot_dir}/tmux" ~/.tmux
+cd "${dot_dir}/tmux"
 make tmux.conf
 cd - >/dev/null
 
-echo Compiling tmux plugins...
-pushd $dot_dir/tmux >/dev/null
-git clone https://github.com/thewtex/tmux-mem-cpu-load
-cd tmux-mem-cpu-load
-mkdir -p build
-cd build
-cmake ..
-make
-ln -sf ${PWD}/tmux-mem-cpu-load ~/.tmux-mem-cpu-load
-popd
+echo Configuring zsh...
+ln -sfn "${dot_dir}/zsh/zshrc" ~/.zshrc
+if [ "$(finger "${USER}" | grep -oP 'Shell: \K.*')" != "$(which zsh)" ]
+then
+    chsh -s $(which zsh)
+fi
 
 echo Installing fzf...
-git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-~/.fzf/install
-
-echo Installing OMF...
-curl -L https://get.oh-my.fish | fish
-echo omf theme dangerous | fish
+if [ ! -d ~/.fzf ]
+then
+    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+    ~/.fzf/install
+fi
 
 echo Setup complete.
 

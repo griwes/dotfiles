@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+window_width=$(tmux display-message -p '#{window_width}')
+window_width=$(tmux display-message -p '#{window_width}')
+if [[ "${window_width}" -lt 150 ]]
+then
+    max_blocks=4
+elif [[ "${window_width}" -lt 200 ]]
+then
+    max_blocks=8
+else
+    max_blocks=16
+fi
+
+block_characters=(" " "▁" "▂" "▃" "▄" "▅" "▆" "▇" "█")
+
+blocks=$(nproc)
+factors=( $(factor ${blocks} | awk -F':' '{ print $2 }') )
+factor_index=0
+cpus_per_group=1
+while [[ "${blocks}" -gt "${max_blocks}" && "${factor_index}" -lt "${#factors[@]}" ]]
+do
+    blocks=$((${blocks} / ${factors[${factor_index}]}))
+    cpus_per_group=$((${cpus_per_group} * ${factors[${factor_index}]}))
+    factor_index=$((${factor_index} + 1))
+done
+
+printf " CPU: "
+
+while [[ "${blocks}" -ne 0 ]]
+do
+    printf "#[fg=#{E:@percent-palette-${blocks}}]${block_characters[${blocks}]}"
+    blocks=$((${blocks} - 1))
+done
+

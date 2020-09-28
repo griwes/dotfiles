@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+set -e
+
+ssh=$(which ssh)
+
+# original comment from the snippet I've found:
+# > Thanks to #nafpik for this awesomeness
+# I don't know if "awesomeness" is the right word for this cursed thing
+ssh_getopt=$(strings ${ssh} | \
+    grep -Eo '([0-9A-Za-z]+:){10,}[0-9A-Za-z]*')
+
+getopted=$(getopt "${ssh_getopt}" "$@")
+
+options=$(echo "${getopted}" | awk -F ' -- ' '{ print $1 }')
+positional=$(echo "${getopted}" | awk -F ' -- ' '{ print $2 }')
+
+read target cmd <<<${positional}
+
+ident="~/.ssh-tty-info/.$(hostname).$$"
+
+if [[ -n "${cmd}" ]]
+then
+    sh_cmd="-c '${cmd}'"
+fi
+
+ssh -t ${options} ${target} "mkdir -p ~/.ssh-tty-info; tty > ${ident}; trap \"rm ${ident}\" EXIT; \$0 ${sh_cmd}" || {
+    echo '(Remember, for non-POSIX target shells, use `/usr/bin/env ssh`!)'
+}
+

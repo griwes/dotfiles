@@ -1,5 +1,0 @@
-bundle/*
-undo/*
-swap/*
-!*/.keep
-!bundle/vundle

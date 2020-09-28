@@ -9,4 +9,5 @@ BITS := $(shell find ./rc -name "*.conf" | sort --version-sort)
 
 tmux.conf: $(BITS)
 	cat $(BITS) > $@
+	tmux source tmux.conf
 

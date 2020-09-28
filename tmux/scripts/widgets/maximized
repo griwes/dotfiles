@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+tmux display-message -p '#{?window_zoomed_flag,#[#{E:@active-style}] MAX #[#{@default-style}],     }'

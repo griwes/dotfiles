@@ -1,0 +1,92 @@
+#!/usr/bin/env bash
+
+set -e
+
+regular_fill='─'
+cross_fill='┴'
+
+pane_iteration="#{?pane_at_bottom,#{?pane_active,active ,}#{pane_left} #{pane_right} #{?pane_at_right,end,},}"
+window_iteration="#{?window_active,#{?window_zoomed_flag,active 0 #{pane_right},#{P:${pane_iteration}}},}"
+session_iteration="#{?session_attached,#{W:${window_iteration}},}"
+format_string="#{S:${session_iteration}}"
+
+bottom_pane_layout=$(tmux display-message -p "${format_string}")
+
+column=0
+
+active=0
+# active states:
+#  0 - not active
+#  1 - next pane is active
+#  2 - current pane is active
+
+state=0
+# states:
+#  0 - expecting the beginning of a pane
+#  1 - expecting the end of a pane
+
+printf "#[#{pane-border-style}]"
+
+for cmd in ${bottom_pane_layout}
+do
+    case "${cmd}"
+    in
+        "active")
+            printf "#[#{pane-active-border-style}]"
+            active=1
+            ;;
+
+        "end")
+            ;;
+
+        "*[!0-9]*")
+            echo "\nerror: something changed in tmux, got a non-number" >&2
+            echo "in: '${bottom_pane_layout}', at '${cmd}'" >&2
+            exit 1
+            ;;
+
+        *)
+            if [[ ${cmd} -lt ${column} ]]
+            then
+                echo "\nerror: panes don't seem to be in order" >&2
+                echo "in: '${bottom_pane_layout}', at '${cmd}'" >&2
+                exit 1
+            fi
+
+            case $state
+            in
+                0)
+                    if [[ ${cmd} -ne 0 ]]
+                    then
+                        printf ${cross_fill}
+                    fi
+
+                    column=${cmd}
+                    state=1
+
+                    if [[ ${active} -eq 1 ]]
+                    then
+                        active=2
+                    elif [[ ${active} -eq 2 ]]
+                    then
+                        active=0
+                        printf "#[#{pane-border-style}]"
+                    fi
+
+                    ;;
+
+                1)
+                    printf '%*s' $((${cmd} - ${column} + 1)) "" | sed "s/ /${regular_fill}/g"
+                    column=${cmd}
+                    state=0
+
+                    ;;
+
+                *)
+                    echo "\nerror: unexpected state: ${state}" >&2
+            esac
+
+            ;;
+    esac
+done
+

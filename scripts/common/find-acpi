@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+
+set -e
+
+# technically, if /sys/subsystem exists, we are supposed to ignore the rest of the
+# possible locations; however, I don't have access to a system that presents that,
+# so I can't really tell how to deal with that.
+if [ -d /sys/subsystem ]
+then
+    echo 'error: unexpected /sys/subsystem'
+    exit 1
+fi
+
+# technically, the kernel is free to move a subsystem between the three locations
+# below. I haven't seen acpi outside of /sys/bus yet, but since *technically* we
+# are required to check all three, so check all three we will.
+possible_locations=(
+    /sys/bus
+    /sys/class
+    /sys/block
+)
+
+for dir in ${possible_locations[@]}
+do
+    if [ -d "${dir}/acpi" ]
+    then
+        echo "${dir}/acpi"
+        exit 0
+    fi
+done
+

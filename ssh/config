@@ -1,24 +1,5 @@
-CheckHostIP yes
-HashKnownHosts yes
-VisualHostKey yes
-
-Host waterdeep wtd
-    HostName waterdeep.reaver-project.org
-    Port 22
-    User griwes
-
-Host znc
-    HostName znc.reaver-project.org
-    Port 22
-    User griwes
-
-Host ci
-    HostName ci.reaver-project.org
-    Port 22
-    User griwes
-
-Host home
-    HostName waterdeep.reaver-project.org
-    Port 19999
-    User griwes
+Host *
+    ControlMaster auto
+    ControlPath ~/.ssh/cm_sockets/%h:%p
+    ControlPersist 1
 

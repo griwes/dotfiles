@@ -1,0 +1,172 @@
+#!/usr/bin/env bash
+
+#set -g @status-2-center "#[#{E:@current-inactive-style}]griwes@waterdeep#[fg=default,bg=default,default] <- #[#{E:@inactive-style}]#[fg=#d70000,bold]root#[#{E:@inactive-style}]@foobar#[fg=default,bg=default,default] <- #[#{E:@inactive-style}]griwes@#(hostname)#[fg=default,bg=default,default]"
+
+top_process_of() {
+    ps -t "$1" -o user= -o pid= -o ppid= -o command= | awk '
+        {
+            user[$2] = $1; parent[$2] = $3; child[$3] = $2; for (i = 4 ; i <= NF; ++i) command[$2] = i > 4 ? command[$2] FS $i : $i
+        }
+        END {
+            for (i in parent)
+            {
+                if (!(i in child) && parent[i] != 1)
+                {
+                    print i, user[i], command[i]
+                    exit
+                }
+            }
+        }
+    '
+}
+
+handle_ssh() {
+    local rshell=$1 # "ssh" or "mosh"
+    shift
+
+    local ssh_args rshell_get_tty message
+
+    case "${rshell}"
+    in
+        "ssh")
+            ssh_args="$@"
+
+            local tty_info
+            tty_info=$(echo "${ssh_args}" | egrep -o "~/.ssh-tty-info/.$(hostname).[0-9]+")
+
+            if [[ $? -eq 0 ]]
+            then
+                rshell_get_tty="cat ${tty_info}"
+            fi
+            ;;
+
+        "mosh")
+            ssh_args=$(echo ${@} | sed -E -e 's/.*-# (.*)\|.*$/\1/')
+
+            local mosh_ip mosh_port
+            read mosh_ip mosh_port <<<$(echo $@ | awk -F'|' '{ print $2 }')
+
+            # this assumes that mosh always has just a **single** child
+            # let's hope this doesn't break :D
+            rshell_get_tty="
+                fuser ${mosh_port}/udp 2>/dev/null \
+                    | xargs -Imoshpid ps --pid moshpid -o pid= -o cmd= \
+                    | grep mosh-server \
+                    | awk '{ print \$1 }' \
+                    | xargs -Imoshpid ps --ppid moshpid -o tname= \
+                    | xargs -Itty echo /dev/tty \
+                    | tee -a ~/.log
+            "
+            ;;
+
+        *)
+            message="!!! pane-info: unexpected rshell: ${rshell} !!! "
+            ;;
+    esac
+
+    local front user host port remote
+
+    read user host port <<<$(
+        /usr/bin/env ssh -T -o ControlPath=none -o ProxyCommand="sh -c 'echo %%tmux-remote-info%% %r %h %p >&2;'" ${ssh_args} 2>&1 \
+            | awk '/^%tmux-remote-info% / { print $2, $3, $4 }')
+
+    local remote_info remote_info_avail
+
+    if [[ -n "${rshell_get_tty}" ]]
+    then
+        remote_info=$(
+            set -e
+            /usr/bin/env ssh < "${BASH_SOURCE[0]}" -o BatchMode=yes -p "${port}" "${user}@${host}" \
+                "temp=\$(mktemp); trap \"rm '\${temp}'\" EXIT; cat - > \"\${temp}\" && chmod +x \"\${temp}\" && env DOTFILES_REMOTE=1 \"\${temp}\" \"\$(${rshell_get_tty})\"")
+        remote_info_avail=$?
+    else
+        remote_info_avail=1
+    fi
+
+    local ipv6_regex='^([0-9a-fA-F]{0,4}:){1,7}[0-9a-fA-F]{0,4}$'
+
+    if [[ ${remote_info_avail} -eq 0 ]]
+    then
+        local remote_host remote_domain
+
+        IFS='@' read remote_host remote_info <<<$(echo "${remote_info}" | rev)
+        front=$(echo "${remote_info}" | rev)
+        remote_host=$(echo "${remote_host}" | rev)
+
+        IFS='.' read remote_host remote_domain <<<"${remote_host}"
+        if [[ "${remote_domain}" == "$(hostname -d)" ]]
+        then
+            if [[ "${remote_host}" == "$(hostname -s)" ]]
+            then
+                remote_domain="."
+            else
+                remote_domain="..."
+            fi
+        elif [[ -n "${remote_domain}" ]]
+        then
+            remote_domain=".${remote_domain}"
+        fi
+
+        host="${remote_host}${remote_domain}"
+    else
+        if [[ ${host} =~ ${ipv6_regex} ]]
+        then
+            host="[${host}]"
+        fi
+
+        front="?[?] ${user}"
+        host="${host}:${port}"
+    fi
+
+    echo "${message}${front}@${host}"
+}
+
+tty="$1"
+
+if [[ "${tty}" == "tmux" ]]
+then
+    tty=$(tmux display-message -p '#{pane_tty}')
+fi
+
+if [[ -z "${tty}" ]]
+then
+    echo "${USER}@$(hostname -s)"
+    exit 0
+fi
+
+read pid user cmd <<<$(top_process_of "${tty}")
+read program arguments <<<"${cmd}"
+
+pid="#[fg=#{E:@percent-palette-8}]$pid#[#{E:@inactive-style}]"
+
+case "${program}"
+in
+    "ssh")
+        remote=$(handle_ssh ssh "${arguments}")
+        program="${remote} <-(#[fg=#{E:@percent-palette-5}]ssh#[#{E:@inactive-style}][${pid}])-"
+        ;;
+
+    "mosh-client")
+        remote=$(handle_ssh mosh "${arguments}")
+        program="${remote} <-(#[fg=#{E:@percent-palette-5}]mosh#[#{E:@inactive-style}][${pid}])-"
+        ;;
+
+    *)
+        program="${program}[${pid}] as"
+        ;;
+esac
+
+if [[ "${user}" == "root" ]]
+then
+    user="#[#{E:@alert-style}]root#[#{E:@inactive-style}]"
+elif [[ "${user}" != "${USER}" ]]
+then
+    user="#[fg=#{E:@percent-palette-3}]${user}#[#{E:@inactive-style}]"
+fi
+
+if [[ "${DOTFILES_REMOTE}" -eq 1 ]]
+then
+    echo "#[#{E:@inactive-style}]${program} ${user}@$(hostname)"
+else
+    echo "#[#{E:@inactive-style}]${program} ${user}@$(hostname -s)"
+fi

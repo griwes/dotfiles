@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+tmux display-message -p '#{?pane_in_mode,#[#{E:@active-style}] COPY #[#{@default-style}],      }'

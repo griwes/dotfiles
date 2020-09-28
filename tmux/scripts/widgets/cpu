@@ -1,0 +1,103 @@
+#!/usr/bin/env bash
+
+window_width=$(tmux display-message -p '#{window_width}')
+if [[ "${window_width}" -lt 200 ]]
+then
+    max_blocks=4
+elif [[ "${window_width}" -lt 250 ]]
+then
+    max_blocks=8
+else
+    max_blocks=16
+fi
+
+generate_string() {
+    current_stat=$(cat /proc/stat)
+    old_stat=$(tmux display-message -p '#{@tmux-cpu-info-proc-stat-cached-value}')
+    tmux set -g '@tmux-cpu-info-proc-stat-cached-value' "${current_stat}"
+
+    if [[ -z "${old_stat}" ]]
+    then
+        exit
+    fi
+
+    block_characters=(" " "▁" "▂" "▃" "▄" "▅" "▆" "▇" "█")
+
+    blocks=$(nproc)
+    factors=( $(factor ${blocks} | awk -F':' '{ print $2 }') )
+    factor_index=0
+    cpus_per_block=1
+    while [[ "${blocks}" -gt "${max_blocks}" && "${factor_index}" -lt "${#factors[@]}" ]]
+    do
+        blocks=$((${blocks} / ${factors[${factor_index}]}))
+        cpus_per_block=$((${cpus_per_block} * ${factors[${factor_index}]}))
+        factor_index=$((${factor_index} + 1))
+    done
+
+    printf "CPU: ["
+
+    block=0
+    cpu=0
+
+    while [[ "${blocks}" -ne 0 ]]
+    do
+        block_totald=0
+        block_idled=0
+
+        while [[ "${cpu}" -lt "${cpus_per_block}" ]]
+        do
+            cpu_id=$((${block} * ${cpus_per_block} + ${cpu}))
+
+            read pname pnice psystem pidle piowait pirq psoftirq psteal prest <<<$(echo "${old_stat}" | grep "^cpu${cpu_id}")
+            read cname cnice csystem cidle ciowait cirq csoftirq csteal crest <<<$(echo "${current_stat}" | grep "^cpu${cpu_id}")
+
+            pidle=$((${pidle} + ${piowait}))
+            pnonidle=$((${puser} + ${pnice} + ${psystem} + ${pirq} + ${psoftirq} + ${psteal}))
+            ptotal=$((${pidle} + ${pnonidle}))
+
+            cidle=$((${cidle} + ${ciowait}))
+            cnonidle=$((${cuser} + ${cnice} + ${csystem} + ${cirq} + ${csoftirq} + ${csteal}))
+            ctotal=$((${cidle} + ${cnonidle}))
+
+            totald=$((${ctotal} - ${ptotal}))
+            idled=$((${cidle} - ${pidle}))
+
+            block_totald=$((${block_totald} + ${totald}))
+            block_idled=$((${block_idled} + ${idled}))
+
+            cpu=$((${cpu} + 1))
+        done
+
+        cpu=0
+        block=$((${block} + 1))
+
+        palette_index=$(printf "%.0f" $(awk "BEGIN { print ${block_idled} * 10 / ${block_totald} - 0.5; }") | sed 's/^-//')
+        character_index=$(printf "%.0f" $(awk "BEGIN { print (${block_totald} - ${block_idled}) * 8 / ${block_totald}; }"))
+
+        printf "#[fg=#{E:@percent-palette-${palette_index}}]${block_characters[${character_index}]}"
+        blocks=$((${blocks} - 1))
+    done
+
+    printf "#[#{E:@inactive-style}]]"
+}
+
+tmux_cached_value=$(tmux display-message -p '#{@tmux-cpu-info-cached-value}')
+tmux_cached_max_blocks=$(tmux display-message -p '#{@tmux-cpu-info-cached-max-blocks}')
+if [[ ! -z "${tmux_cached_value}" ]]
+then
+    tmux_cached_timestamp=$(tmux display-message -p '#{@tmux-cpu-info-cached-timestamp}')
+    if [[ $(($(date +"%s") - ${tmux_cached_timestamp})) -lt 1 && "${tmux_cached_max_blocks}" -eq "${max_blocks}" ]]
+    then
+        printf "${tmux_cached_value}"
+        exit
+    fi
+fi
+
+not_cached=$(generate_string)
+
+tmux set -g '@tmux-cpu-info-cached-value' "${not_cached}"
+tmux set -g '@tmux-cpu-info-cached-timestamp' "$(date +"%s")"
+tmux set -g '@tmux-cpu-info-cached-max-blocks' "${max_blocks}"
+
+printf "${not_cached}"
+

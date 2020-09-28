@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+
+window_width=$(tmux display-message -p '#{window_width}')
+
+current_dir=$(dirname $(realpath -s "${BASH_SOURCE[0]}"))
+
+"${current_dir}/../common/read-ac-status" \
+    | while read line
+do
+    IFS=':' read name is_on <<<"${line}"
+
+    if [ "${is_on}" -eq 0 ]
+    then
+        inactive="in"
+        if [[ "${window_width}" -lt 150 ]]
+        then
+            description="✘"
+        else
+            description="OFF"
+        fi
+    else
+        inactive=""
+        if [[ "${window_width}" -lt 150 ]]
+        then
+            description="✔"
+        else
+            description="ON"
+        fi
+    fi
+
+    if [[ "${window_width}" -lt 150 ]]
+    then
+        printf "#[#{E:@%sactive-style}]🔌 \b%s#[#{E:@default-style}]" "${inactive}" "${description}"
+    else
+        printf "#[#{E:@%sactive-style}] %s: %s #[#{E:@default-style}]" "${inactive}" "${name}" "${description}"
+    fi
+done
+
+"${current_dir}/../common/read-battery-status" \
+    | while read line
+do
+    IFS=':' read name mode capacity time_left <<<"${line}"
+
+    color_index=$(printf "%.0f" $(awk "BEGIN { print ${capacity} * 10 - 0.5; }") | sed 's/^-//')
+    capacity=$(awk "BEGIN { print ${capacity} * 100; }")
+    if [[ "${window_width}" -lt 150 ]]
+    then
+        time_left_hm=$(awk "BEGIN { printf \"%d:%02dh\", ${time_left} / 60, ${time_left} % 60; }")
+    else
+        time_left_hm=$(awk "BEGIN { printf \"%d:%02d h \", ${time_left} / 60, ${time_left} % 60; }")
+    fi
+
+    style="#[fg=#{E:@percent-palette-${color_index}},bold]"
+    case "${mode}"
+    in
+        1)
+            if [[ "${window_width}" -lt 150 ]]
+            then
+                description="▼"
+            else
+                description="DIS "
+            fi
+            style="#[fg=#121212,bg=#{E:@percent-palette-${color_index}},bold]"
+            ;;
+
+        2)
+            if [[ "${window_width}" -lt 150 ]]
+            then
+                description="▲"
+            else
+                description="CHG "
+            fi
+            ;;
+
+        *)
+            description=""
+            time_left_hm=""
+            ;;
+    esac
+
+    if [[ "${window_width}" -lt 150 ]]
+    then
+        printf " %s🔋 \b%s%.0f%% %s#[#{E:@default-style}]" "${style}" "${description}" "${capacity}" "${time_left_hm}"
+    else
+        printf " %s %s: %s%.0f%% %s#[#{E:@default-style}]" "${style}" "${name}" "${description}" "${capacity}" "${time_left_hm}"
+    fi
+done
+

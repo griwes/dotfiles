@@ -1,0 +1,7 @@
+let g:netrw_dirhistmax  =10
+let g:netrw_dirhistcnt =5
+let g:netrw_dirhist_5='/home/griwes/projects/homelab/ansible/roles/common'
+let g:netrw_dirhist_4='/etc/bumblebee/xorg.conf.d'
+let g:netrw_dirhist_3='/home/griwes/projects/tasking/examples'
+let g:netrw_dirhist_2='/home/griwes/projects/nonsense/systemd/nonsense-.slice.d'
+let g:netrw_dirhist_1='/home/griwes/projects/nonsense/systemd'

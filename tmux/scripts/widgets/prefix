@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+tmux display-message -p '#{?client_prefix,#[#{E:@alert-bg-style}] ^A #[#{@default-style}],    }'

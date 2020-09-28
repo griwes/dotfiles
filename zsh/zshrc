@@ -1,0 +1,82 @@
+export ADOTDIR=~/.local/share/zsh/antigen
+
+if [ ! -f "${ADOTDIR}/antigen.zsh" ]
+then
+    echo "Downloading antigen..."
+    mkdir -p "${ADOTDIR}"
+    curl -L git.io/antigen > "${ADOTDIR}/antigen.zsh" >/dev/null
+fi
+source "${ADOTDIR}/antigen.zsh"
+
+antigen use oh-my-zsh
+antigen theme rkj-repos
+
+antigen bundle debian
+antigen bundle docker
+antigen bundle extract
+antigen bundle fbterm
+antigen bundle git
+antigen bundle gpg-agent
+antigen bundle pip
+antigen bundle ssh-agent
+antigen bundle svn-fast-info
+antigen bundle tig
+antigen bundle vi-mode
+antigen bundle thefuck
+
+antigen bundle dirhistory
+antigen bundle per-directory-history
+
+antigen bundle zsh-users/zsh-autosuggestions
+antigen bundle zsh-users/zsh-completions
+
+antigen bundle popstas/zsh-command-time
+antigen bundle MichaelAquilina/zsh-you-should-use
+
+antigen bundle supercrabtree/k
+
+antigen bundle zdharma/fast-syntax-highlighting
+# last bundle!
+antigen bundle zsh-users/zsh-history-substring-search
+
+antigen apply
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt INC_APPEND_HISTORY_TIME
+
+# zsh-history-substring-search configuration
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
+HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
+
+bindkey "^[[1~" vi-beginning-of-line
+bindkey "^[[4~" vi-end-of-line
+bindkey "^[[1;5C" forward-word
+bindkey "^[[1;5D" backward-word
+bindkey -s "^L" 'clear && tmux clear-history\n'
+
+# remind about things... after
+export YSU_MESSAGE_POSITION="after"
+
+# welcome to glorious new future
+EDITOR=nvim
+alias vim=nvim
+
+# when in tmux, ring a bell every time a command finishes
+precmd() {
+    if [ -n ${TMUX+x} ]
+    then
+        echo -n -e "\a"
+    fi
+}
+
+# override `ssh` to invoke magic necessary by the tmux status line
+# NOTE: that will only work on posix targets. use \ssh to connect to, say, windows
+ssh() {
+    ~/.tmux/scripts/fauxssh $@
+}
+

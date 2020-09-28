@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+current_dir=$(dirname $(realpath -s "${BASH_SOURCE[0]}"))
+acpi_dir=$("${current_dir}/find-acpi")
+
+if [ $? -ne 0 ]
+then
+    echo "${acpi_dir}"
+    exit 1
+fi
+
+set -e
+
+for dir in ${acpi_dir}/drivers/ac/*
+do
+    if [ ! -L "${dir}" ]
+    then
+        continue
+    fi
+
+    for ac in ${dir}/power_supply/*
+    do
+        ac_name=$(basename "${ac}")
+        is_online=$(cat "${ac}/online")
+
+        printf "%s:%d\n" "${ac_name}" "${is_online}"
+    done
+done
+

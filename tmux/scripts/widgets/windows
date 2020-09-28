@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+tmux display-message -p '#{W:#[range=window|#{window_index}]#{E:@window-status-format},#[range=window|#{window_index}]#{E:@window-status-current-format}}#[range=window|777]'

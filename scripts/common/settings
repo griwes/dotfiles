@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# this file defines the different kinds of resources to be monitored by both the tmux status
+# line and the i3 bar of choice
+
+network_interfaces=(
+    eth0
+    wlp3s0
+)
+
+directories=(
+    /
+    /home
+)
+
