@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 top_process_of() {
-    ps -t "$1" -o user= -o pid= -o ppid= -o command= | awk '
+    ps -t "$1" -o user= -o pid= -o ppid= -o command= | grep -v gitstatusd | awk '
         {
             user[$2] = $1; parent[$2] = $3; child[$3] = $2; for (i = 4 ; i <= NF; ++i) command[$2] = i > 4 ? command[$2] FS $i : $i
         }
@@ -58,7 +58,7 @@ handle_ssh_nocache() {
             ;;
 
         *)
-            message="!!! pane-info: unexpected rshell: ${rshell} !!! "
+            message="!!! pane: unexpected rshell: ${rshell} !!! "
             ;;
     esac
 

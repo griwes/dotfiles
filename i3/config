@@ -8,7 +8,7 @@ font pango:DejaVu Sans Mono, FontAwesome 10
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+bindsym $mod+Return exec alacritty
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -130,14 +130,13 @@ bindsym $mod+r mode "resize"
 
 # Keyboard layout
 exec_always --no-startup-id setxkbmap -layout pl,ru -variant ',phonetic_winkeys'
-exec_always --no-startup-id setxkbmap -option '' -option 'grp:alt_space_toggle,compose:prsc,caps:swapescape,shift:breaks_caps'
+exec_always --no-startup-id setxkbmap -option '' -option 'grp:alt_space_toggle,compose:prsc,shift:breaks_caps'
 
 # autostart
 exec --no-startup-id ~/dotfiles/scripts/feh-rotate
-exec --no-startup-id compton -b --config ~/.config/i3/compton.conf
-exec --no-startup-id redshift
-exec --no-startup-id dropbox start
-exec --no-startup-id keynav
+exec --no-startup-id picom -b --config ~/.config/i3/compton.conf
+exec --no-startup-id redshift -l37:-121
+# exec --no-startup-id ~/dotfiles/audio/start-combined-sink
 
 # bind volume control
 bindsym XF86AudioRaiseVolume exec amixer set Master -q 5%+ & exec ~/.config/i3/scripts/volume-notify
@@ -145,8 +144,8 @@ bindsym XF86AudioLowerVolume exec amixer set Master -q 5%- & exec ~/.config/i3/s
 bindsym XF86AudioMute exec amixer set Master toggle & exec ~/.config/i3/scripts/volume-notify
 
 # bind brightness control
-bindsym XF86MonBrightnessUp exec xbacklight -inc 10 & exec ~/.config/i3/scripts/brightness-notify
-bindsym XF86MonBrightnessDown exec xbacklight -dec 10 & exec ~/.config/i3/scripts/brightness-notify
+bindsym XF86MonBrightnessUp exec brightnessctl set +5% & exec ~/.config/i3/scripts/brightness-notify
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%- & exec ~/.config/i3/scripts/brightness-notify
 
 # i3lock with wallpaper images
 bindsym $mod+Control+l exec ~/lock-poc
@@ -160,7 +159,9 @@ bindsym $mod+Control+Shift+semicolon move workspace to output right
 # random tweaks
 focus_follows_mouse no
 
-# disable the border for Termite
-for_window [class="(?i)termite"] border pixel 1
+hide_edge_borders smart
+
+# disable the border for Alacritty
+for_window [class="(?i)Alacritty"] border pixel 1
 for_window [class="(?i)x-terminal-emulator"] border pixel 1
 

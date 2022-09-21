@@ -16,19 +16,23 @@ let g:rainbow#pairs =
       \ ]
 let g:rainbow#colors = {
       \   'dark': [
-      \ ['blue',        'dodgerblue'],
-      \ ['darkgray',    'slategray'],
-      \ ['darkgreen',   'forestgreen'],
-      \ ['darkcyan',    'deepskyblue'],
-      \ ['darkmagenta', 'tomato'],
-      \ ['blue',        'dodgerblue'],
-      \ ['darkgray',    'slategray'],
-      \ ['darkgreen',   'forestgreen'],
-      \ ['darkcyan',    'springgreen4']
       \   ]
       \ }
 
-au Filetype * RainbowParentheses
+let g:rainbow_conf = {
+    \ 'guifgs': [
+      \ 'dodgerblue',
+      \ 'slategray',
+      \ 'forestgreen',
+      \ 'deepskyblue',
+      \ 'tomato',
+      \ 'slategray',
+      \ 'forestgreen',
+      \ 'springgreen4'
+    \ ]
+    \}
+
+au Filetype * RainbowToggleOn
 " the plugin breaks CMake highlighting, so disable it there
-au Filetype cmake RainbowParentheses!
+au Filetype cmake RainbowToggleOff
 

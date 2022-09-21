@@ -23,7 +23,7 @@ match ExtraWhitespace /\s\+$/
 autocmd BufWritePre * %s/\s\+$//e
 
 " somehow indentlines tends to sometimes break...
-autocmd VimEnter * nested :IndentLinesReset
+" autocmd VimEnter * nested :IndentLinesReset
 
 " shell-like tab completion of commands
 set wildmenu

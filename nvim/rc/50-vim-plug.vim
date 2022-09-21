@@ -9,9 +9,6 @@ unlet autoload_plug_path
 
 call plug#begin(stdpath('data') . '/plugged')
 
-" plugin requirements
-Plug 'roxma/nvim-yarp' " ncm2
-
 " status line
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
@@ -21,24 +18,20 @@ Plug 'dikiaap/minimalist'
 Plug 'haishanh/night-owl.vim'
 
 " language support
-Plug 'autozimu/LanguageClient-neovim', {
-    \ 'branch': 'next',
-    \ 'do': 'bash install.sh',
-    \ }
-Plug 'arakashic/chromatica.nvim'
+Plug 'prabirshrestha/vim-lsp'
+Plug 'mfussenegger/nvim-dap'
+Plug 'rcarriga/nvim-dap-ui'
+
 Plug 'craigemery/vim-autotag'
 
 " autocomplete
-Plug 'ncm2/ncm2'
-Plug 'ncm2/ncm2-bufword'
-Plug 'ncm2/ncm2-path'
-Plug 'ncm2/ncm2-github'
-
-Plug 'ncm2/ncm2-neoinclude' | Plug 'Shougo/neoinclude.vim'
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'prabirshrestha/asyncomplete-lsp.vim'
+Plug 'prabirshrestha/asyncomplete-buffer.vim'
+Plug 'prabirshrestha/asyncomplete-file.vim'
+Plug 'yami-beta/asyncomplete-omni.vim'
 
 Plug 'wellle/tmux-complete.vim'
-
-Plug 'fgrsnau/ncm2-otherbuf'
 
 " general utility plugins
 Plug 'junegunn/fzf'
@@ -47,15 +40,14 @@ Plug 'junegunn/fzf.vim'
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 
-Plug 'tpope/vim-unimpaired'
 Plug 'tpope/vim-surround'
-Plug 'terryma/vim-multiple-cursors'
+Plug 'mg979/vim-visual-multi'
 Plug 'gcmt/wildfire.vim'
-Plug 'easymotion/vim-easymotion'
+Plug 'phaazon/hop.nvim'
 
-Plug 'junegunn/rainbow_parentheses.vim'
+Plug 'luochen1990/rainbow'
 Plug 'mbbill/undotree'
-Plug 'Yggdroot/indentLine'
+Plug 'lukas-reineke/indent-blankline.nvim'
 
 Plug 'machakann/vim-highlightedyank'
 Plug 'markonm/traces.vim'
@@ -63,7 +55,25 @@ Plug 'markonm/traces.vim'
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
 
-" debugging
-Plug 'sakhnik/nvim-gdb', { 'do': ':!./install.sh \| UpdateRemotePlugins' }
-
 call plug#end()
+
+let g:rainbow_active = 1
+
+lua require'hop'.setup {}
+
+map  <Leader>f :HopChar1<CR>
+nmap <Leader>f :HopChar1MW<CR>
+map  <Leader>s :HopChar2<CR>
+nmap <Leader>s :HopChar2MW<CR>
+map  <Leader>w :HopWord<CR>
+nmap <Leader>w :HopWordMW<CR>
+map  <Leader>L :HopLine<CR>
+nmap <Leader>L :HopLineMW<CR>
+
+map  <Leader>/ :HopPattern<CR>
+nmap <Leader>/ :HopPattern<CR>
+
+map  <Leader>; :HopWordCurrentLineAC<CR>
+map  <Leader>l :HopVerticalBC<CR>
+map  <Leader>k :HopVerticalAC<CR>
+map  <Leader>j :HopWordCurrentLineBC<CR>

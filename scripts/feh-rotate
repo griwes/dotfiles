@@ -2,7 +2,7 @@
 
 while true
 do
-    feh -z --bg-scale ~/Pictures/wallpapers/*.png
+    feh -z --bg-fill ~/Pictures/wallpapers/*.jpg
     sleep 5m
 done
 

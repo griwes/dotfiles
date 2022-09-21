@@ -2,10 +2,10 @@
 screenchange-reload = true
 
 [colors]
-background = #d0000000
-background-current = #d0202020
-background-inactive = #d0000000
-background-alert = #d0bd3c40
+background = #da000000
+background-current = #da202020
+background-inactive = #da000000
+background-alert = #dabd3c40
 foreground = #dfdfdf
 foreground-current = #87d7d7
 foreground-inactive = #5fafaf

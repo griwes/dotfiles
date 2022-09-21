@@ -35,43 +35,43 @@ let s:cterm_green_offset = 107
 let s:gui_white = "#FFFFFF"
 let s:cterm_white = 255
 
-let s:gui_dark_gray = "#121212"
+let s:gui_dark_gray = "#606060"
 let s:cterm_dark_gray = 'darkgray'
 
 let g:airline#themes#griwes#palette = {}
 
 let s:N1 = [ s:gui_black, s:gui_cyan, s:cterm_black, s:cterm_cyan ]
 let s:N2 = [ s:gui_black, s:gui_cyan_offset,  s:cterm_black, s:cterm_cyan_offset ]
-let s:N3 = [ s:gui_cyan, s:gui_black, s:cterm_cyan, 'None' ]
-let s:N3mod = [ s:gui_purple, s:gui_black, s:cterm_purple, 'None' ]
+let s:N3 = [ s:gui_cyan, 'None', s:cterm_cyan, 'None' ]
+let s:N3mod = [ s:gui_purple, 'None', s:cterm_purple, 'None' ]
 let g:airline#themes#griwes#palette.normal = airline#themes#generate_color_map(s:N1, s:N2, s:N3)
 let g:airline#themes#griwes#palette.normal_modified = airline#themes#generate_color_map(s:N1, s:N2, s:N3mod)
 
 let s:I1 = [ s:gui_black, s:gui_green, s:cterm_black, s:cterm_green ]
 let s:I2 = [ s:gui_black, s:gui_green_offset, s:cterm_black, s:cterm_green_offset ]
-let s:I3 = [ s:gui_green, s:gui_black, s:cterm_green, 'None' ]
-let s:I3mod = [ s:gui_purple, s:gui_black, s:cterm_purple, 'None' ]
+let s:I3 = [ s:gui_green, 'None', s:cterm_green, 'None' ]
+let s:I3mod = [ s:gui_purple, 'None', s:cterm_purple, 'None' ]
 let g:airline#themes#griwes#palette.insert = airline#themes#generate_color_map(s:I1, s:I2, s:I3)
 let g:airline#themes#griwes#palette.insert_modified = airline#themes#generate_color_map(s:I1, s:I2, s:I3mod)
 
 let s:V1 = [ s:gui_black, s:gui_blue, s:cterm_black, s:cterm_blue ]
 let s:V2 = [ s:gui_black, s:gui_blue_offset,  s:cterm_black, s:cterm_blue_offset ]
-let s:V3 = [ s:gui_blue, s:gui_black, s:cterm_blue, 'None' ]
-let s:V3mod = [ s:gui_purple, s:gui_black, s:cterm_purple, 'None' ]
+let s:V3 = [ s:gui_blue, 'None', s:cterm_blue, 'None' ]
+let s:V3mod = [ s:gui_purple, 'None', s:cterm_purple, 'None' ]
 let g:airline#themes#griwes#palette.visual = airline#themes#generate_color_map(s:V1, s:V2, s:V3)
 let g:airline#themes#griwes#palette.visual_modified = airline#themes#generate_color_map(s:V1, s:V2, s:V3mod)
 
 let s:R1 = [ s:gui_black, s:gui_yellow, s:cterm_black, s:cterm_yellow ]
 let s:R2 = [ s:gui_black, s:gui_yellow_offset, s:cterm_black, s:cterm_yellow_offset ]
-let s:R3 = [ s:gui_yellow, s:gui_black, s:cterm_yellow, 'None' ]
-let s:R3mod = [ s:gui_purple, s:gui_black, s:cterm_purple, 'None' ]
+let s:R3 = [ s:gui_yellow, 'None', s:cterm_yellow, 'None' ]
+let s:R3mod = [ s:gui_purple, 'None', s:cterm_purple, 'None' ]
 let g:airline#themes#griwes#palette.replace = airline#themes#generate_color_map(s:R1, s:R2, s:R3)
 let g:airline#themes#griwes#palette.replace_modified = airline#themes#generate_color_map(s:R1, s:R2, s:R3mod)
 
 let s:IA1 = [ s:gui_black, s:gui_dark_gray, s:cterm_black, s:cterm_dark_gray ]
-let s:IA2 = [ s:gui_dark_gray, s:gui_black, s:cterm_dark_gray, 'None' ]
-let s:IA3 = [ s:gui_dark_gray, s:gui_black, s:cterm_dark_gray, 'None' ]
-let s:IA3mod = [ s:gui_purple, s:gui_black, s:cterm_purple, 'None' ]
+let s:IA2 = [ s:gui_dark_gray, 'None', s:cterm_dark_gray, 'None' ]
+let s:IA3 = [ s:gui_dark_gray, 'None', s:cterm_dark_gray, 'None' ]
+let s:IA3mod = [ s:gui_purple, 'None', s:cterm_purple, 'None' ]
 let g:airline#themes#griwes#palette.inactive = airline#themes#generate_color_map(s:IA1, s:IA2, s:IA3)
 let g:airline#themes#griwes#palette.inactive_modified = airline#themes#generate_color_map(s:IA1, s:IA2, s:IA3mod)
 

@@ -4,7 +4,7 @@
 sleep 0.5
 
 # Get the brightness percentage:
-BRIGHTNESS_VALUE=$(xbacklight -get)
+BRIGHTNESS_VALUE=$(brightnessctl info | grep 'Current' | sed -E -e 's/\tCurrent brightness: [0-9]+ \(([0-9]+%)\)/\1/')
 
 # Round the brightness percentage:
 LC_ALL=C

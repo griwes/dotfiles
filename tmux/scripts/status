@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
 current_dir=$(dirname $(realpath -s "${BASH_SOURCE[0]}"))
-if [[ $(nice) -ne -15 ]]
-then
-    sudo -n nice -n-15 sudo -u ${USER} ~/.tmux/scripts/status 2>/dev/null
-    if [[ $? -eq 0 ]]
-    then
-        exit 0
-    fi
-fi
+#if [[ $(nice) -ne -15 ]]
+#then
+    #sudo -n nice -n-15 sudo -u ${USER} ~/.tmux/scripts/status 2>/dev/null
+    #if [[ $? -eq 0 ]]
+    #then
+        #exit 0
+    #fi
+#fi
 
 window_width=$(tmux display-message -p '#{window_width}')
 center_point=$((${window_width} / 2))

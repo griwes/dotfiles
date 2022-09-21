@@ -50,8 +50,8 @@ echo Configuring ssh...
 ln -sfn "${dot_dir}/ssh/config" ~/.ssh/config
 mkdir -p ~/.ssh/cm_sockets
 
-echo Configuring termite...
-ln -sfn "${dot_dir}/termite" ~/.config/termite
+echo Configuring alacritty...
+ln -sfn "${dot_dir}/alacritty" ~/.config/alacritty
 
 echo Configuring tmux...
 ln -sfn "${dot_dir}/tmux/tmux.conf" ~/.tmux.conf
@@ -62,6 +62,7 @@ cd - >/dev/null
 
 echo Configuring zsh...
 ln -sfn "${dot_dir}/zsh/zshrc" ~/.zshrc
+ln -sfn "${dot_dir}/zsh/p10k.zsh" ~/.p10k.zsh
 if [ "$(finger "${USER}" | grep -oP 'Shell: \K.*')" != "$(which zsh)" ]
 then
     chsh -s $(which zsh)

@@ -35,15 +35,15 @@ let s:cterm_green_offset = 107
 let s:gui_white = "#FFFFFF"
 let s:cterm_white = 255
 
-let s:gui_dark_gray = "#121212"
+let s:gui_dark_gray = "#606060"
 let s:cterm_dark_gray = 'darkgray'
 
 let g:airline#themes#griwes_focus_lost#palette = {}
 
 let s:IA1 = [ s:gui_black, s:gui_dark_gray, s:cterm_black, s:cterm_dark_gray ]
-let s:IA2 = [ s:gui_dark_gray, s:gui_black, s:cterm_dark_gray, 'None' ]
-let s:IA3 = [ s:gui_dark_gray, s:gui_black, s:cterm_dark_gray, 'None' ]
-let s:IA3mod = [ s:gui_purple, s:gui_black, s:cterm_purple, 'None' ]
+let s:IA2 = [ s:gui_dark_gray, 'None', s:cterm_dark_gray, 'None' ]
+let s:IA3 = [ s:gui_dark_gray, 'None', s:cterm_dark_gray, 'None' ]
+let s:IA3mod = [ s:gui_purple, 'None', s:cterm_purple, 'None' ]
 
 let g:airline#themes#griwes_focus_lost#palette.normal = airline#themes#generate_color_map(s:IA1, s:IA2, s:IA3)
 let g:airline#themes#griwes_focus_lost#palette.normal_modified = airline#themes#generate_color_map(s:IA1, s:IA2, s:IA3mod)
