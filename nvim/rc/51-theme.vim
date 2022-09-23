@@ -16,6 +16,9 @@ highlight Normal ctermbg=None guibg=None
 
 highlight VertSplit ctermbg=none guibg=None
 
+" brighter cursorline
+highlight Cursor guifg=#a0a0a0
+
 " also, the theme is slightly too monotonic with its choice for Type
 " so make it green-ish instead of purply
 highlight Type ctermfg=114 guifg=#87d787
@@ -26,7 +29,7 @@ highlight PreProc ctermfg=167 guifg=#d75f5f
 highlight Statement ctermfg=140 guifg=#af87d7
 
 " make comments brighter in the presence of transparent background
-highlight Comment ctermfg=247 guifg=#9e9e9e
+highlight Comment ctermfg=247 guifg=#9e9e9e gui=italic
 
 " style tweaks for ncm2
 highlight Pmenu ctermbg=black guibg=black
@@ -57,3 +60,11 @@ highlight HopNextKey2 ctermfg=172 guifg=#d78700
 
 " indent line
 highlight IndentBlanklineChar ctermfg=239 guifg=#4e4e4e
+
+" vim-illuminate
+highlight default IlluminatedWordText guibg=#303060 gui=bold
+highlight default IlluminatedWordRead guibg=#303060 gui=bold
+highlight default IlluminatedWordWrite guibg=#303060 gui=bold
+
+" borders
+highlight link FloatBorder Pmenu

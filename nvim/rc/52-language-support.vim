@@ -25,25 +25,119 @@ highlight default link LspSemanticMacro Macro
 highlight default link LspSemanticConcept LspSemanticClass
 highlight default link LspSemanticClass Type
 
-let g:lsp_semantic_enabled = 1
-
-autocmd User lsp_setup call lsp#register_server({
-    \   'name': 'clangd',
-    \   'cmd': ['clangd', '--background-index', '--clang-tidy', '--completion-style=bundled', '--header-insertion=never'],
-    \   'allowlist': ['c', 'cpp']
-    \ })
-
 " auto-format C++
 " don't format Vapor files
 " don't format files with no filetype, because that blocks the LC forever
 " should probably invest in its own filetype one day
 autocmd BufRead * if empty(matchstr(@%, '*.vpr')) && !empty(&filetype) && !exists('b:formatting_autocmd_set')
-    \ | execute 'autocmd BufWritePre <buffer> LspDocumentFormatSync'
+    \ | execute 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
     \ | let b:formatting_autocmd_set = 1
     \ | endif
 
-" quick fix
-nmap <F9> :LspCodeAction quickfix<CR>
+" lsp
+lua <<EOF
+local capabilities = vim.lsp.protocol.make_client_capabilities()
+capabilities["textDocument"]["completion"]["completionItem"]["snippetSupport"] = false
+capabilities["textDocument"]["semanticTokens"] = { requests = { range = true, full = { delta = true }}}
+
+local function sem_token_attach(_)
+  vim.lsp.buf.semantic_tokens_full()
+  vim.cmd [[autocmd BufEnter,CursorHold,InsertLeave <buffer> lua vim.lsp.buf.semantic_tokens_full()]]
+end
+
+require("nvim-semantic-tokens").setup {
+  preset = "default",
+  -- highlighters is a list of modules following the interface of nvim-semantic-tokens.table-highlighter or
+  -- function with the signature: highlight_token(ctx, token, highlight) where
+  --        ctx (as defined in :h lsp-handler)
+  --        token  (as defined in :h vim.lsp.semantic_tokens.on_full())
+  --        highlight (a helper function that you can call (also multiple times) with the determined highlight group(s) as the only parameter)
+  highlighters = { require 'nvim-semantic-tokens.table-highlighter'}
+}
+
+require("clangd_extensions").setup {
+  server = {
+    cmd = { "clangd", [[--clang-tidy]], [[--completion-style=detailed]], [[--header-insertion=never]] },
+    capabilities = capabilities,
+    on_attach = function(client)
+      -- sem_token_attach(client)
+    end,
+  },
+}
+
+require("rust-tools").setup {
+  server = {
+    capabilities = capabilities,
+    on_attach = function(client)
+    end,
+  },
+}
+
+require("lsp_lines").setup()
+vim.diagnostic.config({
+  virtual_text = false,
+})
+
+require('nvim-lightbulb').setup({autocmd = {enabled = true}})
+require('fzf_lsp').setup()
+
+require('illuminate').configure {
+    delay = 500,
+}
+EOF
+
+autocmd TextChanged * lua require("clangd_extensions.inlay_hints").set_inlay_hints()
+autocmd TextChangedI * lua require("clangd_extensions.inlay_hints").set_inlay_hints()
+
+" autocomplete
+lua <<EOF
+require('lsp_signature').setup({ hint_enable = false, hi_parameter = 'IlluminatedWordText' })
+
+local cmp = require('cmp')
+
+cmp.setup({
+  window = {
+    completion = { -- rounded border; thin-style scrollbar
+      border = 'rounded',
+      scrollbar = '║',
+    },
+    documentation = { -- rounded border; thin-style scrollbar
+      border = 'rounded',
+      scrollbar = '║',
+    },
+  },
+  sorting = {
+    comparators = {
+      cmp.config.compare.offset,
+      cmp.config.compare.exact,
+      cmp.config.compare.recently_used,
+      require("clangd_extensions.cmp_scores"),
+      cmp.config.compare.kind,
+      cmp.config.compare.sort_text,
+      cmp.config.compare.length,
+      cmp.config.compare.order,
+    },
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-f>'] = cmp.mapping.scroll_docs(4),
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<C-e>'] = cmp.mapping.abort(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+    ['<Tab>'] = cmp.mapping.select_next_item(),
+    ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+  }),
+  sources = cmp.config.sources({
+    { name = 'nvim_lsp' },
+    { name = 'vsnip' }, -- For vsnip users.
+    -- { name = 'luasnip' }, -- For luasnip users.
+    -- { name = 'ultisnips' }, -- For ultisnips users.
+    -- { name = 'snippy' }, -- For snippy users.
+  }, {
+    { name = 'buffer' },
+  })
+})
+EOF
 
 " debugging
 lua <<EOF

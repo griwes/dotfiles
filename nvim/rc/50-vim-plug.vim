@@ -18,20 +18,37 @@ Plug 'dikiaap/minimalist'
 Plug 'haishanh/night-owl.vim'
 
 " language support
-Plug 'prabirshrestha/vim-lsp'
+Plug 'neovim/nvim-lspconfig'
+Plug 'p00f/clangd_extensions.nvim'
+Plug 'SmiteshP/nvim-navic'
+Plug 'RRethy/vim-illuminate'
+Plug 'smjonas/inc-rename.nvim'
+Plug 'https://git.sr.ht/~whynothugo/lsp_lines.nvim'
+Plug 'theHamsta/nvim-semantic-tokens'
+Plug 'simrat39/rust-tools.nvim'
+
+Plug 'kosayoda/nvim-lightbulb'
+Plug 'antoinemadec/FixCursorHold.nvim'
+Plug 'gfanto/fzf-lsp.nvim'
+Plug 'nvim-lua/plenary.nvim'
+
+" debugger
 Plug 'mfussenegger/nvim-dap'
 Plug 'rcarriga/nvim-dap-ui'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'theHamsta/nvim-dap-virtual-text'
 
 Plug 'craigemery/vim-autotag'
 
 " autocomplete
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'prabirshrestha/asyncomplete-lsp.vim'
-Plug 'prabirshrestha/asyncomplete-buffer.vim'
-Plug 'prabirshrestha/asyncomplete-file.vim'
-Plug 'yami-beta/asyncomplete-omni.vim'
-
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
 Plug 'wellle/tmux-complete.vim'
+
+Plug 'ray-x/lsp_signature.nvim'
 
 " general utility plugins
 Plug 'junegunn/fzf'
