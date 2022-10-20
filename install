@@ -67,7 +67,7 @@ cd - >/dev/null
 echo Configuring zsh...
 ln -sfn "${dot_dir}/zsh/zshrc" ~/.zshrc
 ln -sfn "${dot_dir}/zsh/p10k.zsh" ~/.p10k.zsh
-if [ "$(finger "${USER}" | grep -oP 'Shell: \K.*')" != "$(which zsh)" ]
+if [ "$(cat /etc/passwd | grep ${USER} | awk -F':' '{ print $7 }')" != "$(which zsh)" ]
 then
     chsh -s $(which zsh)
 fi

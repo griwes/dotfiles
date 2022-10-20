@@ -93,5 +93,10 @@ ssh() {
     ~/.tmux/scripts/fauxssh $@
 }
 
+# same, but for eternal terminal
+et() {
+    ~/.tmux/scripts/fauxet $@
+}
+
 export EDITOR='nvim'
 export PATH="$HOME/.local/bin:$PATH"

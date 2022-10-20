@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -e
+
+ident="~/.ssh-tty-info/.$(hostname).$$"
+\et "$@" -c "mkdir -p ~/.ssh-tty-info; tty > ${ident}; trap \"rm ${ident}\" EXIT; \${SHELL}"
+

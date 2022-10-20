@@ -19,54 +19,43 @@ top_process_of() {
 }
 
 handle_ssh_nocache() {
-    local rshell=$1 # "ssh" or "mosh"
+    local rshell=$1 # "ssh" or "et"
     shift
 
-    local ssh_args rshell_get_tty message
+    local args rshell_get_tty message
+    args=$@
+
+    local tty_info
+    tty_info=$(echo "${args}" | egrep -o "~/.ssh-tty-info/.$(hostname).[0-9]+")
+
+    if [[ $? -eq 0 ]]
+    then
+        rshell_get_tty="cat ${tty_info}"
+    fi
+
+    local user host port
 
     case "${rshell}"
     in
         "ssh")
-            ssh_args="$@"
-
-            local tty_info
-            tty_info=$(echo "${ssh_args}" | egrep -o "~/.ssh-tty-info/.$(hostname).[0-9]+")
-
-            if [[ $? -eq 0 ]]
-            then
-                rshell_get_tty="cat ${tty_info}"
-            fi
+            read user host port <<<$(
+                /usr/bin/env ssh -T -o ControlPath=none -o ProxyCommand="sh -c 'echo %%tmux-remote-info%% %r %h %p >&2;'" ${args[@]} 2>&1 \
+                    | awk '/^%tmux-remote-info% / { print $2, $3, $4 }')
             ;;
 
-        "mosh")
-            ssh_args=$(echo ${@} | sed -E -e 's/.*-# (.*)\|.*$/\1/')
+        "et")
+            local et_args
+            et_args=$(echo ${args[@]} | sed -e 's:-c mkdir -p ~/.ssh-tty-info.*::')
 
-            local mosh_ip mosh_port
-            read mosh_ip mosh_port <<<$(echo $@ | awk -F'|' '{ print $2 }')
-
-            # this assumes that mosh always has just a **single** child
-            # let's hope this doesn't break :D
-            rshell_get_tty="
-                fuser ${mosh_port}/udp 2>/dev/null \
-                    | xargs -Imoshpid ps --pid moshpid -o pid= -o cmd= \
-                    | grep mosh-server \
-                    | awk '{ print \$1 }' \
-                    | xargs -Imoshpid ps --ppid moshpid -o tname= \
-                    | xargs -Itty echo /dev/tty \
-                    | tee -a ~/.log
-            "
+            /usr/bin/env et --ssh-option ControlPath=none --ssh-option ProxyCommand="sh -c 'echo %%tmux-remote-info%% %r %h %p > ~/.ssh-tty-info/local.$$;'" ${et_args} 1>/dev/null 2>/dev/null
+            read user host port <<<$(cat ~/.ssh-tty-info/local.$$ | awk '/^%tmux-remote-info% / { print $2, $3, $4 }')
+            rm ~/.ssh-tty-info/local.$$
             ;;
 
         *)
             message="!!! pane: unexpected rshell: ${rshell} !!! "
             ;;
     esac
-
-    local front user host port remote
-
-    read user host port <<<$(
-        /usr/bin/env ssh -T -o ControlPath=none -o ProxyCommand="sh -c 'echo %%tmux-remote-info%% %r %h %p >&2;'" ${ssh_args} 2>&1 \
-            | awk '/^%tmux-remote-info% / { print $2, $3, $4 }')
 
     local remote_info remote_info_avail
 
@@ -166,9 +155,9 @@ in
         program="${remote} <-(#[fg=#{E:@percent-palette-5}]ssh#[#{E:@inactive-style}][${pid}])-"
         ;;
 
-    "mosh-client")
-        remote=$(handle_ssh mosh "${arguments}")
-        program="${remote} <-(#[fg=#{E:@percent-palette-5}]mosh#[#{E:@inactive-style}][${pid}])-"
+    "et")
+        remote=$(handle_ssh et "${arguments}")
+        program="${remote} <-(#[fg=#{E:@percent-palette-5}]et#[#{E:@inactive-style}][${pid}])-"
         ;;
 
     *)
