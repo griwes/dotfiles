@@ -29,7 +29,6 @@ Plug 'simrat39/rust-tools.nvim'
 
 Plug 'kosayoda/nvim-lightbulb'
 Plug 'antoinemadec/FixCursorHold.nvim'
-Plug 'gfanto/fzf-lsp.nvim'
 Plug 'nvim-lua/plenary.nvim'
 
 " debugger
@@ -50,9 +49,15 @@ Plug 'wellle/tmux-complete.vim'
 
 Plug 'ray-x/lsp_signature.nvim'
 
+" notifications & ui
+Plug 'rcarriga/nvim-notify'
+Plug 'MunifTanjim/nui.nvim'
+Plug 'folke/noice.nvim'
+
 " general utility plugins
 Plug 'junegunn/fzf'
-Plug 'junegunn/fzf.vim'
+Plug 'ibhagwan/fzf-lua'
+Plug 'weilbith/nvim-code-action-menu'
 
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
@@ -72,11 +77,41 @@ Plug 'markonm/traces.vim'
 Plug 'tmux-plugins/vim-tmux-focus-events'
 Plug 'roxma/vim-tmux-clipboard'
 
+Plug 'sindrets/diffview.nvim'
+
 call plug#end()
 
-let g:rainbow_active = 1
+lua <<EOF
+require("notify").setup {
+    background_colour = '#000000'
+}
+vim.notify = require("notify")
 
-lua require'hop'.setup {}
+require('noice').setup {
+    cmdline = {
+        view = "cmdline"
+    },
+    messages = {
+        view_history = "popup"
+    },
+    popupmenu = {
+        backend = "cmp"
+    },
+    lsp_progress = {
+        enabled = true
+    },
+
+    views = {
+        popup = {
+            border = {
+                style = "rounded"
+            }
+        }
+    }
+}
+
+require'hop'.setup()
+EOF
 
 map  <Leader>f :HopChar1<CR>
 nmap <Leader>f :HopChar1MW<CR>

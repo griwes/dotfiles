@@ -12,25 +12,41 @@ endfu
 autocmd Filetype cpp :call TeachCoroutineKeywords()
 
 " semantic highlight
+"
+highlight default LspNamespace guifg=Yellow
+highlight default link LspType Type
+highlight default link LspClass LspType
+highlight default link LspEnum LspType
+highlight default link LspInterface Type
+highlight default link LspStruct Type
+highlight default link LspTypeParameter Type
+highlight default LspParameter guifg=aquamarine
+highlight default LspVariable guifg=LightSteelBlue3
+highlight default LspProperty guifg=LightBlue
+highlight default LspEnumMember guifg=LightGreen
+highlight default link LspFunction Function
+highlight default link LspMethod LspProperty
+highlight default link LspMacro Macro
+highlight default link LspKeyword Keyword
+" highlight default link LspModifier
+highlight default link LspComment Comment
+highlight default link LspString String
+highlight default link LspNumber Number
+highlight default link LspRegexp String
+highlight default link LspOperator Operator
+" highlight default link LspDecorator
 
-highlight default LspSemanticClassScopeMethod ctermfg=LightBlue guifg=LightBlue
-highlight default LspSemanticClassScopeVariable ctermfg=LightBlue guifg=LightBlue
-highlight default LspSemanticClassScopeProperty ctermfg=LightBlue guifg=LightBlue
-highlight default link LspSemanticClassScopeDeclarationProperty LspSemanticClassScopeProperty
-highlight default LspSemanticEnumMember ctermfg=LightGreen guifg=LightGreen
-highlight default LspSemanticNamespace ctermfg=Yellow guifg=Yellow
-highlight default LspSemanticVariable ctermfg=Grey guifg=Grey
-highlight default LspSemanticParameter ctermfg=Grey guifg=Grey
-highlight default link LspSemanticMacro Macro
-highlight default link LspSemanticConcept LspSemanticClass
-highlight default link LspSemanticClass Type
+highlight default LspConcept guifg=wheat
+
+highlight default LspFunctionScope gui=italic
+highlight default link LspDependentName LspProperty
 
 " auto-format C++
 " don't format Vapor files
 " don't format files with no filetype, because that blocks the LC forever
 " should probably invest in its own filetype one day
 autocmd BufRead * if empty(matchstr(@%, '*.vpr')) && !empty(&filetype) && !exists('b:formatting_autocmd_set')
-    \ | execute 'autocmd BufWritePre <buffer> lua vim.lsp.buf.formatting_sync()'
+    \ | execute 'autocmd BufWritePre <buffer> lua vim.lsp.buf.format({ async = false })'
     \ | let b:formatting_autocmd_set = 1
     \ | endif
 
@@ -55,12 +71,17 @@ require("nvim-semantic-tokens").setup {
   highlighters = { require 'nvim-semantic-tokens.table-highlighter'}
 }
 
+local table_hi = require 'nvim-semantic-tokens.table-highlighter'
+table_hi.token_map["concept"] = "LspConcept"
+table_hi.modifiers_map["dependentName"] = "LspDependentName"
+table_hi.modifiers_map["functionScope"] = "LspFunctionScope"
+
 require("clangd_extensions").setup {
   server = {
     cmd = { "clangd", [[--clang-tidy]], [[--completion-style=detailed]], [[--header-insertion=never]] },
     capabilities = capabilities,
     on_attach = function(client)
-      -- sem_token_attach(client)
+       sem_token_attach(client)
     end,
   },
 }
@@ -78,8 +99,18 @@ vim.diagnostic.config({
   virtual_text = false,
 })
 
-require('nvim-lightbulb').setup({autocmd = {enabled = true}})
-require('fzf_lsp').setup()
+require('nvim-lightbulb').setup {
+    sign = {
+        enabled = false
+    },
+    virtual_text = {
+        enabled = true
+    },
+    autocmd = {
+        enabled = true,
+        events = {"CursorHold", "CursorHoldI"}
+    }
+}
 
 require('illuminate').configure {
     delay = 500,
@@ -97,13 +128,11 @@ local cmp = require('cmp')
 
 cmp.setup({
   window = {
-    completion = { -- rounded border; thin-style scrollbar
-      border = 'rounded',
-      scrollbar = '║',
+    completion = cmp.config.window.bordered {
+      winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
     },
-    documentation = { -- rounded border; thin-style scrollbar
-      border = 'rounded',
-      scrollbar = '║',
+    documentation = cmp.config.window.bordered {
+      winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None",
     },
   },
   sorting = {

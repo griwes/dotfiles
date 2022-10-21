@@ -32,7 +32,6 @@ noremap <C-s> <C-u>
 
 " toggle paste with F2 and with leader-p
 set pastetoggle=<F2>
-map <leader>p <F2>
 
 " maximize the current split and make them equal easily
 nnoremap <leader>o <c-w><Bar><c-w>_<cr>

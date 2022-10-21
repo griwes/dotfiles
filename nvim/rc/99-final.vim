@@ -1,3 +1,12 @@
+" force noice.nvim to behave
+highlight clear NoicePopupBorder
+highlight clear NoicePopupmenuBorder
+
+highlight default link NoicePopupBorder FloatBorder
+highlight default link NoicePopupmenuBorder FloatBorder
+
+highlight NoiceCmdlinePopup guibg=None
+
 " automatically write on buffer change
 au FocusLost * :wa
 set autowrite

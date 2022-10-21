@@ -1,6 +1,3 @@
-set t_Co=256
-set termguicolors
-
 set cursorline
 
 " set theme
@@ -66,5 +63,9 @@ highlight default IlluminatedWordText guibg=#303060 gui=bold
 highlight default IlluminatedWordRead guibg=#303060 gui=bold
 highlight default IlluminatedWordWrite guibg=#303060 gui=bold
 
-" borders
-highlight link FloatBorder Pmenu
+" floats
+highlight Pmenu guibg=None
+highlight FloatBorder guifg=Gray guibg=None
+highlight FzfLuaBorder guifg=Gray guibg=None
+
+let g:code_action_menu_window_border = 'rounded'

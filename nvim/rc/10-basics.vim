@@ -47,6 +47,7 @@ set showmode
 
 " enable mouse
 set mouse=a
+set mousemodel=extend
 
 " allow local vimrc
 set exrc
@@ -66,4 +67,8 @@ augroup END
 
 " search for tags file up to /
 set tags=tags;/
+
+" set color options early
+set t_Co=256
+set termguicolors
 
