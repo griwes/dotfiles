@@ -38,17 +38,13 @@ then
 fi
 ln -sfn "${dot_dir}/i3" ~/.config/i3
 
-pip3 install --user i3-workspace-groups
+pip3 install --user i3-workspace-groups --break-system-packages
 
 echo Configuring polybar...
 ln -sfn "${dot_dir}/polybar" ~/.config/polybar
 
 echo Configuring nvim...
 ln -sfn "${dot_dir}/nvim" ~/.config/nvim
-
-pip3 install --user pynvim python-language-server
-nvim +PlugInstall +qall
-nvim +UpdateRemotePlugins +qall
 
 echo Configuring ssh...
 ln -sfn "${dot_dir}/ssh/config" ~/.ssh/config
