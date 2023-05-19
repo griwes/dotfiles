@@ -32,3 +32,19 @@ vim.opt.undofile = true
 
 -- make updates on cursor hold faster
 vim.opt.updatetime = 333
+
+-- TODO: move to its own file
+vim.cmd [[
+    highlight default link cStructure Keyword
+    highlight default link cppStructure Keyword
+    highlight default link cStorageClass Keyword
+    highlight default link cppStorageClass Keyword
+
+    autocmd Syntax c syn keyword cStaticAssert static_assert
+    autocmd Syntax cpp syn keyword cppStaticAssert static_assert
+
+    highlight default link cStaticAssert Keyword
+    highlight default link cppStaticAssert Keyword
+
+    highlight default link cppOperator cLabel
+]]

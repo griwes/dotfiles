@@ -44,10 +44,15 @@ vim.cmd [[
     highlight default link @lsp.type.namespace @namespace
     highlight default link @lsp.type.variable @repeat
     highlight default link @lsp.type.property @property
-    highlight default link @lsp.type.parameter @parameter
+    highlight! default link @lsp.type.parameter @repeat
     highlight default @lsp.type.concept guifg=LightGreen
 
     highlight default @lsp.mod.functionScope gui=italic
+    highlight default @lsp.mod.dependentName guifg=#81b29a gui=italic
+
+    highlight clear @lsp.typemod.function.defaultLibrary
+    highlight clear @lsp.typemod.method.defaultLibrary
+    highlight clear @lsp.typemod.variable.defaultLibrary
 ]]
 
 add_callback(function(lang, client, bufnr)

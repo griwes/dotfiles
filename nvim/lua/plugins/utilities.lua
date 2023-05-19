@@ -27,3 +27,12 @@ require('numb').setup({
 
 require('buffercd').setup({
 })
+
+require('nvim-surround').setup({
+})
+
+require('typo').setup({
+})
+
+require("early-retirement").setup({
+})

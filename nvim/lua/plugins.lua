@@ -12,6 +12,9 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+-- FUTURE TODO:
+-- 1. mason, mason-lspconfig, mason-nvim-dap
+
 require('lazy').setup({
     -- colorscheme
     { 'EdenEast/nightfox.nvim', lazy = false, priority = 1000 }, -- TODO: configure better, move config
@@ -26,6 +29,10 @@ require('lazy').setup({
         }
     },
     { 'SmiteshP/nvim-navic' },
+    { 'nanozuki/tabby.nvim' },
+
+    -- sessions
+    { 'olimorris/persisted.nvim' }, -- TODO: configure keybinds
 
     -- ui
     { 'rcarriga/nvim-notify' },
@@ -53,10 +60,12 @@ require('lazy').setup({
     }, -- TODO: configure keybinds
     { 'molecule-man/telescope-menufacture' }, -- TODO: configure keybinds
     { 'nvim-telescope/telescope-dap.nvim' }, -- TODO: configure keybinds
+    { 'aaronhallaert/advanced-git-search.nvim' },
 
     -- movement
-    { 'ggandor/leap.nvim' }, -- TODO: configure keybinds
+    { 'phaazon/hop.nvim' },
     { 'ethanholz/nvim-lastplace' },
+    { 'chrisgrieser/nvim-spider' },
 
     -- visibility
     { 'lukas-reineke/indent-blankline.nvim' },
@@ -73,8 +82,9 @@ require('lazy').setup({
 
     -- treesitter
     { 'nvim-treesitter/nvim-treesitter', build = ':TSUpdate' },
+    { 'nvim-treesitter/nvim-treesitter-textobjects' }, -- TODO: configure
     { 'haringsrob/nvim_context_vt' },
-    { 'mrjones2014/nvim-ts-rainbow' },
+    { 'HiPhish/nvim-ts-rainbow2' },
 
     -- lsp
     { 'neovim/nvim-lspconfig' },
@@ -111,7 +121,11 @@ require('lazy').setup({
     { 'stevearc/oil.nvim' }, -- TODO: configure
     { 'EtiamNullam/deferred-clipboard.nvim' },
     { 'nacro90/numb.nvim' },
-    { 'tiagovla/buffercd.nvim' }
+    { 'tiagovla/buffercd.nvim' },
+    { 'kylechui/nvim-surround' }, -- TODO: learn
+    { 'axieax/typo.nvim' },
+    { 'jghauser/mkdir.nvim' },
+    { 'chrisgrieser/nvim-early-retirement' },
 })
 
 
@@ -124,6 +138,7 @@ require('nightfox').setup({
 vim.cmd [[ colorscheme nightfox ]]
 
 require('plugins/status')
+require('plugins/sessions')
 require('plugins/ui')
 require('plugins/movement')
 require('plugins/visibility')
@@ -138,7 +153,7 @@ require('plugins/telescope') -- near the end?
 
 -- the very last thing, since it iterates through all HL groups
 require('tint').setup({
-    tint = -60,
+    tint = -50,
     highlight_ignore_patterns = { "WinSeparator", "Status.*", "VertSplit" },
     window_ignore_function = function(winid)
         local bufid = vim.api.nvim_win_get_buf(winid)

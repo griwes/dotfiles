@@ -66,7 +66,7 @@ vim.cmd [[ highlight NormalFloat guibg=None ]] -- TODO: move elsewhere?
 --})
 
 require('smart-splits').setup({
-    tmux_integration = false,
+    multiplexer_integration = false,
 })
 
 require('bufresize').setup({
@@ -76,10 +76,13 @@ require('which-key').setup({
 })
 
 require('trouble').setup({
-    position = 'bottom',
+    position = 'right',
     auto_open = true,
     auto_close = true,
+    use_diagnostic_signs = true,
 })
+
+require('user/trouble')
 
 require('fidget').setup({
 })

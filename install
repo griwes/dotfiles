@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# TODO:
+# 1. rustup
+# 2. cargo install alacritty bob
+# 3. bob install and use a known neovim version
+
 set -e
 
 if [[ "${USER}" != "griwes" && "${USER}" != "mdominiak" && "${GRIWES_DOTFILES_DISREGARD_USERNAME}" -ne 1 ]]
