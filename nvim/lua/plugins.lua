@@ -49,6 +49,7 @@ require('lazy').setup({
     { 'j-hui/fidget.nvim' },
     { 'stevearc/aerial.nvim' }, -- TODO: configure keybind
     { 'tiagovla/scope.nvim' },
+    { 'mbbill/undotree' },
 
     -- fuzzy finders
     { 'nvim-telescope/telescope.nvim',
