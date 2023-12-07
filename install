@@ -2,7 +2,7 @@
 
 # TODO:
 # 1. rustup
-# 2. cargo install alacritty bob
+# 2. cargo install bob
 # 3. bob install and use a known neovim version
 
 set -e
@@ -55,8 +55,8 @@ echo Configuring ssh...
 ln -sfn "${dot_dir}/ssh/config" ~/.ssh/config
 mkdir -p ~/.ssh/cm_sockets
 
-echo Configuring alacritty...
-ln -sfn "${dot_dir}/alacritty" ~/.config/alacritty
+echo Configuring kitty...
+ln -sfn "${dot_dir}/kitty" ~/.config/kitty
 
 echo Configuring tmux...
 ln -sfn "${dot_dir}/tmux/tmux.conf" ~/.tmux.conf

@@ -1,6 +1,7 @@
 [user]
     name = Michał 'Griwes' Dominiak
     email = griwes@griwes.info
+	signingkey = /home/griwes/.ssh/id_ed25519
 
 [alias]
     ri = rebase -i --autosquash
@@ -21,3 +22,9 @@
 	ff = only
 [init]
 	defaultBranch = main
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	allowedSignersFile = /home/griwes/.ssh/allowed_signers
+[commit]
+	gpgsign = true

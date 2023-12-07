@@ -2,20 +2,21 @@ set $mod Mod4
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:DejaVu Sans Mono, FontAwesome 10
+# font pango:DejaVu Sans Mono, FontAwesome 16
+font pango:Iosevka Custom, 14
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec alacritty
+bindsym $mod+Return exec kitty
 
 # kill focused window
 bindsym $mod+Shift+q kill
 
 # start rofi
-bindsym $mod+d exec "rofi -modi window,drun,run -show drun -sidebar-mode -matching fuzzy -sort"
-bindsym $mod+Shift+d exec "rofi -modi window,drun,run -show window -sidebar-mode -matching fuzzy -sort"
+bindsym $mod+d exec "rofi -font 'Iosevka Custom 24' -modi window,drun,run -show drun -sidebar-mode -matching fuzzy -sort"
+bindsym $mod+Shift+d exec "rofi -font 'Iosevka Custom 24' -modi window,drun,run -show window -sidebar-mode -matching fuzzy -sort"
 
 # change focus
 bindsym $mod+j focus left
@@ -135,7 +136,7 @@ exec_always --no-startup-id setxkbmap -option '' -option 'grp:alt_space_toggle,c
 # autostart
 exec --no-startup-id ~/dotfiles/scripts/feh-rotate
 exec --no-startup-id picom -b --config ~/.config/i3/compton.conf
-exec --no-startup-id redshift -l37:-121
+# exec --no-startup-id redshift -l37:-121
 # exec --no-startup-id ~/dotfiles/audio/start-combined-sink
 
 # bind volume control
@@ -161,7 +162,10 @@ focus_follows_mouse no
 
 hide_edge_borders smart
 
-# disable the border for Alacritty
-for_window [class="(?i)Alacritty"] border pixel 1
+# disable the border for terminal
+for_window [class="(?i)kitty"] border pixel 1
 for_window [class="(?i)x-terminal-emulator"] border pixel 1
 
+for_window [class=".*"] title_format "<span size='smaller'>%title</span>"
+for_window [class=".*"] title_window_icon yes
+for_window [class=".*"] title_window_icon padding 10px
