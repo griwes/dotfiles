@@ -11,14 +11,14 @@ fi
 
 set -e
 
-for dir in ${acpi_dir}/drivers/battery/*
+for dir in "${acpi_dir}"/drivers/battery/*
 do
-    if [ ! -L "${dir}" ]
+    if [ ! -L "${dir}" ] || [ "$(basename "${dir}")" == "module" ]
     then
         continue
     fi
 
-    for battery in ${dir}/power_supply/*
+    for battery in "${dir}"/power_supply/*
     do
         battery_name=$(basename "${battery}")
         battery_status=$(cat "${battery}/status")

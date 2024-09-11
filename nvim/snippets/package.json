@@ -1,0 +1,27 @@
+{
+    "name": "griwes-snippets",
+    "contributes": {
+        "snippets": [
+            {
+                "language": ["cpp", "cuda"],
+                "path": "./cpp.json"
+            },
+            {
+                "language": "lua",
+                "path": "./lua.json"
+            },
+            {
+                "language": "bash",
+                "path": "./bash.json"
+            },
+            {
+                "language": "cmake",
+                "path": "./cmake.json"
+            },
+            {
+                "language": "all",
+                "path": "./common.json"
+            }
+        ]
+    }
+}

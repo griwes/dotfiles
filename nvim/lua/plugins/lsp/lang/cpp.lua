@@ -14,7 +14,7 @@ return {
                     [[--header-insertion=never]]
                 },
                 on_attach = function(client, bufnr)
-                    utils.attach_callbacks('c++', client, bufnr)
+                    utils.attach_callbacks(client, bufnr)
                 end,
                 capabilities = utils.get_capabilities(),
             })

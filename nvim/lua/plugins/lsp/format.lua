@@ -4,6 +4,8 @@ return {
         event = 'VeryLazy',
         opts = {
             formatters_by_ft = {
+                asm = { 'asmfmt' },
+                cmake = { 'cmake_format' },
                 lua = { 'stylua' },
             },
         },
@@ -36,13 +38,13 @@ return {
                 end
                 local format = require('conform').format
                 for _, range in pairs(ranges) do
-                    format {
+                    format({
                         range = range,
-                        lsp_fallback = 'always',
-                    }
+                        lsp_format = 'prefer',
+                    })
                 end
             end },
-            { '<leader>lF', function() require('conform').format({ lsp_fallback = 'always' }) end }
+            { '<leader>lF', function() require('conform').format({ lsp_format = 'prefer' }) end }
         }
-    }
+    },
 }

@@ -12,10 +12,9 @@ return {
                 'python',
             },
             handlers = {
-                function(config) 
+                function(config)
                     require('mason-nvim-dap').default_setup(config)
                 end,
-                codelldb = require('plugins.dap.debug.codelldb'),
             },
         },
     },

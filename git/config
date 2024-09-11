@@ -28,3 +28,7 @@
 	allowedSignersFile = /home/griwes/.ssh/allowed_signers
 [commit]
 	gpgsign = true
+[rerere]
+	enabled = true
+[fetch]
+	writeCommitGraph = true

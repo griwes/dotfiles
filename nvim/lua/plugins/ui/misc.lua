@@ -1,13 +1,16 @@
 return {
     {
-        'MunifTanjim/nui.nvim'
+        'MunifTanjim/nui.nvim',
     },
     {
         'rcarriga/nvim-notify',
         event = 'VeryLazy',
         config = function()
             require('notify').setup({
-                background_colour = '#000000'
+                background_colour = '#000000',
+                render = 'wrapped-compact',
+                stages = 'fade',
+                top_down = false,
             })
             vim.notify = require('notify')
         end
@@ -43,32 +46,33 @@ return {
         opts = {},
     },
     {
-        "j-hui/fidget.nvim",
-        tag = "legacy",
-        event = "LspAttach",
+        'NvChad/nvim-colorizer.lua',
+        event = 'VeryLazy',
         opts = {
-        },
-    },
-    -- TODO: move the undo things into their own config
-    {
-        'mbbill/undotree',
-        lazy = false,
-        keys = {
-            { '<leader>ut', '<cmd>UndotreeToggle<cr>' },
-            { '<leader>uf', '<cmd>UndotreeFocus<cr>' },
+            user_default_options = {
+                mode = 'virtualtext',
+            }
         }
     },
     {
-        'kevinhwang91/nvim-fundo',
-        dependencies = {
-            'kevinhwang91/promise-async',
+        'tomiis4/Hypersonic.nvim',
+        event = 'CmdlineEnter',
+        opts = {
+            winblend = 75,
         },
-        event = 'VeryLazy',
-        config = function()
-            local fundo = require('fundo')
-
-            fundo.install()
-            fundo.setup()
-        end,
-    }
+        cmd = 'Hypersonic',
+        keys = {
+        },
+    },
+    {
+        'iamcco/markdown-preview.nvim',
+        cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+        ft = { 'markdown' },
+        build = function() vim.fn['mkdp#util#install']() end,
+    },
+    {
+        'MeanderingProgrammer/markdown.nvim',
+        opts = {
+        },
+    },
 }

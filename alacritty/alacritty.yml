@@ -8,7 +8,8 @@ font:
   normal:
     family: DejaVu Sans Mono Nerd Font
     #family: Monaspace Argon
-  size: 8
+    #family: IosevkaCustom Nerd Font Light
+  size: 10
 
 # Nightfox Alacritty Colors
 # Style: nightfox

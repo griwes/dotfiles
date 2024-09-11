@@ -13,8 +13,8 @@ return {
         }
     },
     {
-        "folke/flash.nvim",
-        event = "VeryLazy",
+        'folke/flash.nvim',
+        event = 'VeryLazy',
         init = function()
             vim.cmd [[
                 highlight! FlashMatch guifg=#f6b079 guibg=None gui=bold
@@ -45,10 +45,10 @@ return {
                 '<leader>w',
                 mode = { 'n', 'v', 'x', 'o' },
                 function()
-                    require("flash").jump({
+                    require('flash').jump({
                         search = {
                             mode = function(str)
-                                return "\\<" .. str
+                                return '\\<' .. str
                             end,
                         },
                     })
@@ -77,22 +77,23 @@ return {
         'liangxianzhe/nap.nvim',
         event = 'VeryLazy',
         config = function()
-            local nap = require("nap")
+            local nap = require('nap')
 
             nap.setup({
                 next_repeat = '<M-]>',
                 prev_repeat = '<M-[>',
                 operators = {
-                    ["d"] = {
-                        next = { rhs = function() vim.diagnostic.goto_next({ float = false }) end, opts = { desc = "Next diagnostic" } },
-                        prev = { rhs = function() vim.diagnostic.goto_prev({ float = false  }) end, opts = { desc = "Prev diagnostic" } },
-                        mode = { "n", "v", "o" },
+                    ['d'] = {
+                        next = { rhs = function() vim.diagnostic.goto_next({ float = false }) end, opts = { desc = 'Next diagnostic' } },
+                        prev = { rhs = function() vim.diagnostic.goto_prev({ float = false  }) end, opts = { desc = 'Prev diagnostic' } },
+                        mode = { 'n', 'v', 'o' },
                     },
                 },
+                exclude_default_operators = {'t', 'T'},
             })
 
-            nap.map("c", nap.gitsigns())
-            nap.map("r", nap.illuminate())
+            nap.map('c', nap.gitsigns())
+            nap.map('r', nap.illuminate())
         end
     },
 }

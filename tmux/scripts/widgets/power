@@ -2,12 +2,12 @@
 
 window_width=$(tmux display-message -p '#{window_width}')
 
-current_dir=$(dirname $(realpath -s "${BASH_SOURCE[0]}"))
+current_dir=$(dirname "$(realpath -s "${BASH_SOURCE[0]}")")
 
 "${current_dir}/../common/read-ac-status" \
-    | while read line
+    | while read -r line
 do
-    IFS=':' read name is_on <<<"${line}"
+    IFS=':' read -r name is_on <<<"${line}"
 
     if [ "${is_on}" -eq 0 ]
     then
@@ -30,18 +30,18 @@ do
 
     if [[ "${window_width}" -lt 150 ]]
     then
-        printf "#[#{E:@%sactive-style}]🔌 \b%s#[#{E:@default-style}]" "${inactive}" "${description}"
+        awk "BEGIN { printf \"#[#{E:@%sactive-style}]🔌 \b%s#[#{E:@default-style}]\", \"${inactive}\", \"${description}\" }"
     else
-        printf "#[#{E:@%sactive-style}] %s: %s #[#{E:@default-style}]" "${inactive}" "${name}" "${description}"
+        awk "BEGIN { printf \"#[#{E:@%sactive-style}] %s: %s #[#{E:@default-style}]\", \"${inactive}\", \"${name}\", \"${description}\" }"
     fi
 done
 
 "${current_dir}/../common/read-battery-status" \
-    | while read line
+    | while read -r line
 do
-    IFS=':' read name mode capacity time_left <<<"${line}"
+    IFS=':' read -r name mode capacity time_left <<<"${line}"
 
-    color_index=$(printf "%.0f" $(awk "BEGIN { print ${capacity} * 10 - 0.5; }") | sed 's/^-//')
+    color_index=$(awk "BEGIN { printf \"%.0f\", ${capacity} * 10 - 0.5; }" | sed 's/^-//')
     capacity=$(awk "BEGIN { print ${capacity} * 100; }")
     if [[ "${window_width}" -lt 150 ]]
     then
@@ -80,9 +80,9 @@ do
 
     if [[ "${window_width}" -lt 150 ]]
     then
-        printf " %s🔋 \b%s%.0f%% %s#[#{E:@default-style}]" "${style}" "${description}" "${capacity}" "${time_left_hm}"
+        awk "BEGIN { printf \" %s🔋 \b%s%.0f%% %s#[#{E:@default-style}]\", \"${style}\", \"${description}\", \"${capacity}\", \"${time_left_hm}\" }"
     else
-        printf " %s %s: %s%.0f%% %s#[#{E:@default-style}]" "${style}" "${name}" "${description}" "${capacity}" "${time_left_hm}"
+        awk "BEGIN { printf \" %s %s: %s%.0f%% %s#[#{E:@default-style}]\", \"${style}\", \"${name}\", \"${description}\", \"${capacity}\", \"${time_left_hm}\" }"
     fi
 done
 

@@ -1,3 +1,13 @@
+local highlight = {
+    'TSRainbowRed',
+    'TSRainbowYellow',
+    -- 'TSRainbowBlue',
+    'TSRainbowOrange',
+    'TSRainbowGreen',
+    'TSRainbowViolet',
+    'TSRainbowCyan',
+}
+
 return {
     {
         'nvim-treesitter/nvim-treesitter',
@@ -8,15 +18,6 @@ return {
                 highlight = {
                     enable = true,
                 },
-            })
-
-            vim.api.nvim_create_augroup('TreesitterToggles', { clear = true })
-
-            vim.api.nvim_create_autocmd('InsertEnter', {
-                command = 'TSBufDisable highlight',
-            })
-            vim.api.nvim_create_autocmd('InsertLeave', {
-                command = 'TSBufEnable highlight',
             })
         end,
     },
@@ -40,9 +41,8 @@ return {
                     prev_selection = ',', -- (Optional) keymap to select the previous selection
                     keymaps = {
                         ['.'] = 'textsubjects-smart',
-                        ['@'] = 'textsubjects-container-outer',
+                        ['a@'] = 'textsubjects-container-outer',
                         ['i@'] = 'textsubjects-container-inner',
-                        ['p'] = '@parameter',
                     },
                 },
             })
@@ -50,27 +50,23 @@ return {
     },
     {
         'lukas-reineke/indent-blankline.nvim',
-        branch = 'current-indent',
-        lazy = false,
+        event = 'VeryLazy',
         dependencies = {
             'nvim-treesitter/nvim-treesitter',
             'HiPhish/rainbow-delimiters.nvim',
         },
         config = function()
-            local highlight = {
-                'RainbowDelimiterRed',
-                'RainbowDelimiterYellow',
-                'RainbowDelimiterBlue',
-                'RainbowDelimiterOrange',
-                'RainbowDelimiterGreen',
-                'RainbowDelimiterViolet',
-                'RainbowDelimiterCyan',
-            }
-
             local scope_overrides = {
                 cpp = {
                     compound_statement = false,
                     statement = true,
+                    definition = true,
+                    declaration = true,
+                    field_declaration = true,
+                    switch_statement = true,
+                    case_statement = true,
+                    call_expression = true,
+                    namespace_definition = true,
                 },
                 lua = {
                     field = true,
@@ -88,13 +84,14 @@ return {
                 indent = {
                     char = '│',
                     smart_indent_cap = true,
+                    priority = 9,
                 },
-                current_indent = {
+                --[[ current_indent = {
                     enabled = false,
                     show_start = false,
                     show_end = false,
                     highlight = highlight,
-                },
+                }, ]]
                 scope = {
                     enabled = true,
                     injected_languages = true,
@@ -126,15 +123,7 @@ return {
                 query = {
                     [''] = 'rainbow-delimiters',
                 },
-                highlight = {
-                    'RainbowDelimiterRed',
-                    'RainbowDelimiterYellow',
-                    'RainbowDelimiterBlue',
-                    'RainbowDelimiterOrange',
-                    'RainbowDelimiterGreen',
-                    'RainbowDelimiterViolet',
-                    'RainbowDelimiterCyan',
-                },
+                highlight = highlight,
             }
         end
     },
@@ -143,7 +132,7 @@ return {
         opts = {},
         keys = {
             {
-                '<A-l>',
+                '<C-A-l>',
                 function()
                     vim.opt.opfunc = 'v:lua.STSSwapUpNormal_Dot'
                     return 'g@l'
@@ -152,7 +141,7 @@ return {
                 expr = true
             },
             {
-                '<A-k>',
+                '<C-A-k>',
                 function()
                     vim.opt.opfunc = 'v:lua.STSSwapDownNormal_Dot'
                     return 'g@l'
@@ -161,7 +150,7 @@ return {
                 expr = true
             },
             {
-                '<A-j>',
+                '<C-A-j>',
                 function()
                     vim.opt.opfunc = 'v:lua.STSSwapCurrentNodePrevNormal_Dot'
                     return 'g@l'
@@ -170,7 +159,7 @@ return {
                 expr = true
             },
             {
-                '<A-;>',
+                '<C-A-;>',
                 function()
                     vim.opt.opfunc = 'v:lua.STSSwapCurrentNodeNextNormal_Dot'
                     return 'g@l'
@@ -185,8 +174,36 @@ return {
             { '<C-j>', '<cmd>STSSelectPrevSiblingNode<cr>', mode = 'x', noremap = true, silent = true },
             { '<C-l>', '<cmd>STSSelectParentNode<cr>',      mode = 'x', noremap = true, silent = true },
             { '<C-k>', '<cmd>STSSelectChildNode<cr>',       mode = 'x', noremap = true, silent = true },
-            { '<A-j>', '<cmd>STSSwapNextVisual<cr>',        mode = 'x', noremap = true, silent = true },
-            { '<A-;>', '<cmd>STSSwapPrevVisual<cr>',        mode = 'x', noremap = true, silent = true },
+            { '<C-A-j>', '<cmd>STSSwapPrevVisual<cr>',        mode = 'x', noremap = true, silent = true },
+            { '<C-A-;>', '<cmd>STSSwapNextVisual<cr>',        mode = 'x', noremap = true, silent = true },
         }
+    },
+    {
+        'danymat/neogen',
+        opts = {
+            snippet_engine = 'luasnip',
+        },
+        keys = {
+            { '<leader>ldd', function() require('neogen').generate({}) end, desc = 'Generate docs' },
+            { '<leader>ldf', function() require('neogen').generate({ type = 'func' }) end, desc = 'Generate docs for surrounding function' },
+            { '<leader>ldc', function() require('neogen').generate({ type = 'class' }) end, desc = 'Generate docs for surrounding class' },
+            { '<leader>ldt', function() require('neogen').generate({ type = 'class' }) end, desc = 'Generate docs for surrounding type' },
+        },
+    },
+    {
+          'mizlan/iswap.nvim',
+          opts = {
+              hl_snipe = 'ErrorMsg',
+          },
+          keys = {
+              { '<leader>is', '<cmd>ISwapWith<cr>' },
+              { '<leader>iis', '<cmd>ISwap<cr>' },
+              { '<leader>in', '<cmd>ISwapNodeWith<cr>' },
+              { '<leader>iin', '<cmd>ISwapNode<cr>' },
+              { '<leader>im', '<cmd>IMoveWith<cr>' },
+              { '<leader>iim', '<cmd>IMove<cr>' },
+              { '<leader>iN', '<cmd>IMoveNodeWith<cr>' },
+              { '<leader>iiN', '<cmd>IMoveNode<cr>' },
+          }
     }
 }

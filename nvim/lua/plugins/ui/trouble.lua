@@ -1,24 +1,82 @@
 return {
     {
         'folke/trouble.nvim',
+        --branch = 'dev',
         opts = {
-            position = 'right',
-            auto_open = false,
-            auto_close = true,
-            use_diagnostic_signs = true,
+            auto_preview = false,
+            auto_jump = false,
+            max_items = 500,
+            multiline = false,
+
+            keys = {
+                j = 'fold_close',
+                k = 'next',
+                l = 'prev',
+                [';'] = 'fold_open',
+            },
+            preview = {
+                type = 'split',
+                relative = 'win',
+                position = 'right',
+                size = 0.6,
+            },
+            icons = {
+                indent = {
+                    last = '╰╴',
+                },
+            },
+            modes = {
+                lsp_definitions = {
+                    auto_jump = false,
+                },
+                lsp_references = {
+                    auto_jump = false,
+                },
+                lsp_type_definitions = {
+                    auto_jump = false,
+                },
+                lsp_implementations = {
+                    auto_jump = false,
+                },
+                lsp_declarations = {
+                    auto_jump = false,
+                },
+                quickfix = {
+                    groups = {
+                        { 'directory' },
+                        { 'filename', format = '{file_icon} {basename} {count}' },
+                    },
+                },
+            },
         },
-        cmd = {
-            'TroubleOpen',
-            'TroubleClose',
-            'TroubleToggle',
+    },
+    {
+        'folke/todo-comments.nvim',
+        lazy = false,
+        opts = {
+            highlight = {
+                pattern = [[.*<(KEYWORDS)(\([^\)]*\))?:]],
+            },
+            search = {
+                 pattern = [[\b(KEYWORDS)(\([^\)]*\))?:]],
+            },
         },
         keys = {
-            { '<leader>tw', '<cmd>TroubleToggle workspace_diagnostics<cr>',
-                desc = 'Toggle Trouble workspace dignostics' },
-            { '<leader>td', '<cmd>TroubleToggle document_diagnostics<cr>',
-                desc = 'Toggle Trouble document dignostics' },
-            { '<leader>tq', '<cmd>TroubleToggle quickfix<cr>', desc = 'Toggle Trouble quickfix' },
-            { '<leader>tt', '<cmd>TroubleToggle<cr>', desc = 'Toggle Trouble' }
-        }
+            -- TODO: reconfigure these in nap.nvim
+            {
+                ']t',
+                function()
+                    require('todo-comments').jump_next()
+                end,
+                desc = 'Next todo comment',
+            },
+            {
+                '[t',
+                function()
+                    require('todo-comments').jump_prev()
+                end,
+                desc = 'Previous todo comment',
+            },
+        },
     },
 }

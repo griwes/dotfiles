@@ -14,16 +14,16 @@ format_value() {
         format="%.2f"
     fi
 
-    palette_index=$(printf "%.0f" $(awk "BEGIN { print (${cpus} * 1.2 - $1) * 10 / (${cpus} * 1.2); }"))
+    palette_index=$(awk "BEGIN { printf \"%.0f\", (${cpus} * 1.2 - $1) * 10 / (${cpus} * 1.2); }")
     if [[ "${palette_index}" -le 0 ]] # less or equal to deal with `-0`
     then
         palette_index=0
     fi
 
-    printf "#[fg=#{E:@percent-palette-${palette_index}}]${format}#[#{E:@inactive-style}]" "$1"
+    awk "BEGIN { printf \"#[fg=#{E:@percent-palette-${palette_index}}]${format}#[#{E:@inactive-style}]\", \"$1\" }"
 }
 
-read la1 la5 la15 rest <<<$(cat /proc/loadavg)
+read la1 la5 la15 rest <<<"$(cat /proc/loadavg)"
 if [[ "${window_width}" -lt 150 ]]
 then
     printf "LA: %s" "$(format_value "${la1}")"

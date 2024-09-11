@@ -1,9 +1,15 @@
 return {
     {
+        'nvim-telescope/telescope-fzf-native.nvim',
+        build =
+        'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build'
+    },
+    {
         'nvim-telescope/telescope.nvim',
         -- dir = '/home/griwes/projects/telescope.nvim',
         dependencies = {
             'nvim-lua/plenary.nvim',
+            'nvim-telescope/telescope-fzf-native.nvim',
             'molecule-man/telescope-menufacture',
             'olimorris/persisted.nvim',
             'nvim-telescope/telescope-dap.nvim',      -- TODO: configure keybinds
@@ -11,29 +17,27 @@ return {
             'rcarriga/nvim-notify',
             'mfussenegger/nvim-dap',
             'tiagovla/scope.nvim',
-            'AckslD/nvim-neoclip.lua',
+            'johmsalas/text-case.nvim',
+            'gbprod/yanky.nvim',
         },
         init = function()
             local utils = require('utils.lsp')
 
-            utils.add_callback(function(_, _, bufnr)
+            utils.add_callback(function(_, bufnr)
                 local wk = require('which-key')
 
-                wk.register({
-                    g = {
-                        r = { '<cmd>Telescope lsp_references<cr>', 'LSP references' },
-                        d = { '<cmd>Telescope lsp_definitions<cr>', 'LSP definitions' },
-                        t = { '<cmd>Telescope lsp_type_definitions<cr>', 'LSP type definitions' },
-                    },
-                }, { buffer = bufnr });
+                wk.add({ {
+                    buffer = bufnr,
+                    { 'gr', '<cmd>Telescope lsp_references<cr>',       desc = 'LSP references' },
+                    { 'gd', '<cmd>Telescope lsp_definitions<cr>',      desc = 'LSP definitions' },
+                    { 'gt', '<cmd>Telescope lsp_type_definitions<cr>', desc = 'LSP type definitions' },
+                } });
 
-                wk.register({
-                    l = {
-                        name = 'LSP',
-                        a = { '<cmd>Telescope diagnostics<cr>', 'LSP diagnostics' },
-                        b = { '<cmd>Telescope diagnostics bufnr=0<cr>', 'LSP diagnostics (buf)' },
-                    },
-                }, { prefix = '<leader>', buffer = bufnr })
+                wk.add({ {
+                    group = 'LSP',
+                    { '<leader>la', '<cmd>Telescope diagnostics<cr>',         desc = 'LSP diagnostics' },
+                    { '<leader>lb', '<cmd>Telescope diagnostics bufnr=0<cr>', desc = 'LSP diagnostics (buf)' },
+                } });
             end)
         end,
         config = function()
@@ -41,6 +45,10 @@ return {
             local actions = require('telescope.actions')
             telescope.setup({
                 defaults = {
+                    get_selection_window = function()
+                        require('edgy').goto_main()
+                        return 0
+                    end,
                     layout_strategy = 'horizontal',
                     layout_config = {
                         horizontal = {
@@ -55,6 +63,16 @@ return {
                         treesitter = true,
                     },
                     dynamic_preview_title = true,
+                },
+                mappings = {
+                    i = {
+                        ["<C-s>"] = actions.preview_scrolling_up,
+                        ["<C-d>"] = actions.preview_scrolling_down,
+                    },
+                    n = {
+                        ["<C-s>"] = actions.preview_scrolling_up,
+                        ["<C-d>"] = actions.preview_scrolling_down,
+                    },
                 },
                 pickers = {
                     buffers = {
@@ -115,7 +133,7 @@ return {
                     },
                     advanced_git_search = {
                         diff_plugin = 'diffview',
-                    }
+                    },
                 }
             })
 
@@ -131,39 +149,40 @@ return {
                 end,
             })
 
+            telescope.load_extension('fzf')
             telescope.load_extension('menufacture')
             telescope.load_extension('dap')
             telescope.load_extension('persisted')
             telescope.load_extension('advanced_git_search')
             telescope.load_extension('notify')
             telescope.load_extension('scope')
-            telescope.load_extension('neoclip')
-            telescope.load_extension('macroscope')
+            telescope.load_extension('grapple')
+            telescope.load_extension('textcase')
+            telescope.load_extension('yank_history')
         end,
         cmd = {
             'Telescope'
         },
         keys = {
-            { '<C-t>', '<cmd>Telescope<cr>' },
-            { '<C-p>', function() require('telescope').extensions.menufacture.find_files() end },
-            { '<C-n>', function() require('telescope').extensions.menufacture.grep_string() end },
-            { '<C-m>', function() require('telescope').extensions.menufacture.live_grep() end },
-            { '<C-g>', function() require('telescope').extensions.menufacture.git_files() end },
-            { '<C-b>', '<cmd>Telescope buffers<cr>' },
-            { '<C-j>', '<cmd>Telescope jumplist<cr>' },
+            { '<C-t>',       '<cmd>Telescope<cr>' },
+            { '<C-p>',       function() require('telescope').extensions.menufacture.find_files() end },
+            { '<C-n>',       function() require('telescope').extensions.menufacture.grep_string() end },
+            { '<C-m>',       function() require('telescope').extensions.menufacture.live_grep() end },
+            { '<C-g>',       function() require('telescope').extensions.menufacture.git_files() end },
+            { '<C-b>',       '<cmd>Telescope buffers<cr>' },
+            { '<C-j>',       '<cmd>Telescope jumplist<cr>' },
+            { '<C-q>',       '<cmd>Telescope quickfix<cr>' },
 
-            { '<leader>gc', '<cmd>Telescope git_commits<cr>' },
-            { '<leader>gb', '<cmd>Telescope git_branches<cr>' },
+            { '<leader>gc',  '<cmd>Telescope git_commits<cr>' },
+            { '<leader>gb',  '<cmd>Telescope git_branches<cr>' },
             { '<leader>ghb', '<cmd>Telescope git_bcommits<cr>' },
             { '<leader>ghr', '<cmd>Telescope git_bcommits_range<cr>' },
             { '<leader>gss', '<cmd>Telescope git_stash<cr>' },
 
-            { '<leader>dc', '<cmd>Telescope dap configurations<cr>' },
-            { '<leader>db', '<cmd>Telescope dap list_breakpoints<cr>' },
-            { '<leader>dv', '<cmd>Telescope dap variables<cr>' },
-            { '<leader>df', '<cmd>Telescope dap frames<cr>' },
-            { '<leader>hy',  '<cmd>Telescope neoclip<cr>' },
-            { '<leader>hm',  '<cmd>Telescope macroscope<cr>' },
+            { '<leader>dc',  '<cmd>Telescope dap configurations<cr>' },
+            { '<leader>db',  '<cmd>Telescope dap list_breakpoints<cr>' },
+            { '<leader>dv',  '<cmd>Telescope dap variables<cr>' },
+            { '<leader>df',  '<cmd>Telescope dap frames<cr>' },
         },
     }
 }

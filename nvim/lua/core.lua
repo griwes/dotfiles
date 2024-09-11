@@ -28,12 +28,17 @@ vim.opt.expandtab = true
 vim.opt.scrolloff = 4
 vim.opt.smartindent = true
 
+-- better wrapping
+vim.opt.breakindent = true
+vim.opt.breakindentopt = 'shift:4'
+vim.opt.linebreak = true
+
 -- history options
 vim.opt.undolevels = 16384
 vim.opt.undofile = true
 
 -- make updates on cursor hold faster
-vim.opt.updatetime = 333
+vim.opt.updatetime = 300
 
 -- stable splits
 vim.opt.splitkeep = 'screen'
@@ -63,36 +68,29 @@ vim.cmd [[
     autocmd WinEnter * set shortmess=F
 ]]
 
-vim.api.nvim_create_autocmd({ 'OptionSet' }, {
-    pattern = '*',
-    callback = function(args)
-        if args.relative ~= '' then
-            vim.opt.winblend = vim.g.neovide and 75 or 30
-        end
-    end
-})
+local target_winblend = vim.g.neovide and 66 or 0
 
-vim.api.nvim_create_autocmd({ 'SafeState' }, {
-    pattern = '*',
-    callback = function(args)
-        vim.opt_local.textwidth = vim.fn.max({vim.fn.max(
-            vim.tbl_map(
-                function(x) return #x end,
-                vim.api.nvim_buf_get_lines(0, 0, -1, false))),
-            150})
-    end,
-})
 vim.api.nvim_create_autocmd({ 'OptionSet' }, {
-    pattern = 'textwidth',
+    pattern = '*',
     callback = function(_)
-        require('windows')
+        vim.opt.winblend = target_winblend
     end
 })
 
 -- leader
 vim.g.mapleader = ','
+vim.g.localleader = ','
 
 -- allow more tabs, will be useful with tabulature
-vim.g.tabpagemax = 750
+vim.g.tabpagemax = 1000
 
 vim.opt.laststatus = 3
+vim.opt.guifont = 'IosevkaCustom Nerd Font Light:h10:#h-slight:#e-subpixelantialias'
+
+vim.g.neovide_transparency = 0.85
+vim.g.neovide_underline_stroke_scale = 0.5
+vim.g.neovide_cursor_animation_length = 0.02
+vim.g.neovide_scroll_animation_length = 0.15
+
+vim.g.neovide_floating_blur_amount_x = 2.5
+vim.g.neovide_floating_blur_amount_y = 2.5

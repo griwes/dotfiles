@@ -15,7 +15,7 @@ fi
 source "${ADOTDIR}/antigen.zsh"
 
 antigen use oh-my-zsh
-antigen theme romkatv/powerlevel10k
+#antigen theme romkatv/powerlevel10k
 
 antigen bundle debian
 antigen bundle docker
@@ -50,7 +50,7 @@ antigen bundle zsh-users/zsh-history-substring-search
 antigen apply
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-source ~/.p10k.zsh
+#source ~/.p10k.zsh
 
 HISTFILE=~/.zsh_history
 HISTSIZE=999999999
@@ -100,3 +100,7 @@ et() {
 
 export EDITOR='nvim'
 export PATH="$HOME/.cargo/bin:$HOME/.local/share/bob/nvim-bin:$HOME/.local/bin:$PATH"
+
+eval "$(starship init zsh)"
+
+eval $(thefuck --alias)

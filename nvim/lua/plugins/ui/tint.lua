@@ -16,20 +16,25 @@ return {
 
             require('tint').setup({
                 tint = -50,
-                highlight_ignore_patterns = { 'WinSeparator', 'Status.*', 'VertSplit', 'ibl.*', 'GitSigns.*Inline', 'lualine_.*' },
+                highlight_ignore_patterns = { 'WinSeparator', 'Status.*', 'VertSplit', 'GitSigns.*Inline', 'lualine_.*' },
+                tint_background_colors = true,
                 window_ignore_function = function(winid)
                     local bufid = vim.api.nvim_win_get_buf(winid)
-                    local buftype = vim.api.nvim_buf_get_option(bufid, 'buftype')
-                    local filetype = vim.api.nvim_buf_get_option(bufid, 'filetype')
+                    local buftype = vim.bo[bufid].buftype
+                    local filetype = vim.bo[bufid].filetype
                     local floating = vim.api.nvim_win_get_config(winid).relative ~= ''
+                    local filename = vim.api.nvim_buf_get_name(bufid)
 
                     -- Do not tint `terminal` or floating windows or dap UI, tint everything else
                     return buftype == 'terminal' or
                         floating or
+                        vim.wo[winid].diff or
                         filetype:find('dap', 1, true) == 1 or
-                        filetype == 'Trouble'
+                        filename:find('diffview:', 1, true) == 1 or
+                        filename:find('octo:', 1, true) == 1 or
+                        filetype == 'trouble' or filetype == 'noice' or filetype == 'neo-tree' or filetype == 'qf'
                 end
             })
         end,
-    }
+    },
 }
