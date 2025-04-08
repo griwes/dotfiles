@@ -1,7 +1,6 @@
 [user]
     name = Michał 'Griwes' Dominiak
     email = griwes@griwes.info
-	signingkey = /home/griwes/.ssh/id_ed25519
 
 [alias]
     ri = rebase -i --autosquash
@@ -10,25 +9,36 @@
     squ = commit --squash
     d = difftool
 
-[push]
-    default = simple
-[cola]
-    spellcheck = false
-[diff]
-    tool = vimdiff
-[difftool]
-    prompt = false
-[pull]
-	ff = only
-[init]
-	defaultBranch = main
 [gpg]
 	format = ssh
 [gpg "ssh"]
 	allowedSignersFile = /home/griwes/.ssh/allowed_signers
+    defaultKeyCommand = bash -c 'ssh-add -L | xargs -I{} echo "key::{}"'
 [commit]
 	gpgsign = true
+[tag]
+    gpgsign = true
+
+[difftool "difftastic"]
+    # See `man git-difftool` for a description of MERGED, LOCAL and REMOTE.
+    cmd = difft "$MERGED" "$LOCAL" "abcdef1" "100644" "$REMOTE" "abcdef2" "100644"
+[difftool]
+    prompt = false
+[pager]
+    difftool = true
+[diff]
+    external = difft
+    tool = difftastic
+
+[push]
+    default = simple
+[pull]
+	ff = only
+[init]
+	defaultBranch = main
 [rerere]
 	enabled = true
 [fetch]
 	writeCommitGraph = true
+
+# vim: ft=gitconfig

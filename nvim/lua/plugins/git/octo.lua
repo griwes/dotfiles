@@ -183,7 +183,7 @@ return {
             { '<leader>oic', '<cmd>Octo issue create<cr>', desc = 'Create an issue against the current repo' },
 
             { '<leader>opl', '<cmd>Octo pr list<cr>', desc = 'List PRs for the current repo' },
-            { '<leader>opm', '<cmd>Ocro pr search author:griwes status:open<cr>',
+            { '<leader>opm', '<cmd>Octo pr search author:griwes status:open<cr>',
                 desc = 'List my open PRs in the current repo' },
             { '<leader>opr', '<cmd>Octo pr search review:required user-review-requested:griwes state:open<cr>',
                 desc = 'List open PRs awaiting my review in this repo' },

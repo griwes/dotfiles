@@ -11,6 +11,7 @@ return {
             local dapui = require('dapui')
 
             dapui.setup({
+                force_buffers = true,
                 layouts = { {
                     elements = { {
                         id = "scopes",
@@ -30,7 +31,10 @@ return {
                 }, {
                     elements = { {
                         id = "repl",
-                        size = 1
+                        size = 0.5,
+                    }, {
+                        id = "console",
+                        size = 0.5,
                     } },
                     position = "bottom",
                     size = 15

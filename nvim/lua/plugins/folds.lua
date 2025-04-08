@@ -126,8 +126,13 @@ return {
     {
         'chrisgrieser/nvim-origami',
         event = 'BufReadPost',
+        dependencies = {
+            'kevinhwang91/nvim-ufo',
+        },
         opts = {
-            setupFoldKeymaps = false,
+            foldKeymaps = {
+                setup = false,
+            },
         },
         keys = {
             { 'j', function() require('origami').h() end },

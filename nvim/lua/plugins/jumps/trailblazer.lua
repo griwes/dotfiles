@@ -64,7 +64,7 @@ return {
                 function()
                     vim.ui.select(require('trailblazer.trails.stacks').get_sorted_stack_names(),
                         { prompt = 'Select trailblazer stack:', },
-                        function(choice) vim.fn.require('trailblazer').switch_trail_mark_stack(choice) end)
+                        function(choice) require('trailblazer').switch_trail_mark_stack(choice) end)
                 end,
                 desc = 'Select trailblazer stack'
             },

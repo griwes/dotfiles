@@ -1,6 +1,6 @@
 -- bootstrap lazy
 local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
     vim.fn.system({
         'git',
         'clone',
@@ -11,6 +11,12 @@ if not vim.loop.fs_stat(lazypath) then
     })
 end
 vim.opt.rtp:prepend(lazypath)
+
+local original_loadfile = loadfile
+_G.loadfile = function(filename, mode, env)
+    --- @diagnostic disable-next-line: need-check-nil
+    return original_loadfile(filename, mode, env)
+end
 
 require('lazy').setup('plugins', {
     ui = {
@@ -24,4 +30,3 @@ require('lazy').setup('plugins', {
         enabled = true,
     },
 })
-

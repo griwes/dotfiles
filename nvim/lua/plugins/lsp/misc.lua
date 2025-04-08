@@ -136,23 +136,25 @@ return {
         lazy = false,
         opts = {
             init = function()
-                require('hover.providers.lsp')
+                require('hover.providers.dap')
+                require('hover.providers.diagnostic')
+                require('hover.providers.fold_preview')
                 require('hover.providers.gh')
                 require('hover.providers.gh_user')
+                require('hover.providers.lsp')
                 require('hover.providers.man')
             end,
             preview_opts = {
                 border = 'rounded',
             },
-            preview_window = true,
+            preview_window = false,
             title = true,
-            mouse_providers = {
-                'LSP'
-            },
         },
         keys = {
-            { 'K',  function() require('hover').hover({}) end },
-            { 'gK', function() require('hover').hover_select({}) end },
+            { 'K',           function() require('hover').hover({}) end },
+            { 'gK',          function() require('hover').hover_select({}) end },
+            { '<M-j>',       function() require('hover').hover_switch('previous', {}) end },
+            { '<M-;>',       function() require('hover').hover_switch('next', {}) end },
         },
     },
     {
@@ -171,5 +173,37 @@ return {
                 }
             }
         },
+    },
+    {
+        'icholy/lsplinks.nvim',
+        config = function()
+            local lsplinks = require('lsplinks')
+            lsplinks.setup()
+            require('utils.lsp').add_callback(function()
+                vim.keymap.set('n', 'gx', lsplinks.gx)
+            end)
+        end
+    },
+    {
+        'artemave/workspace-diagnostics.nvim',
+        keys = {
+            {
+                '<leader>lx',
+                function()
+                    for _, client in ipairs(vim.lsp.get_clients()) do
+                        require('workspace-diagnostics').populate_workspace_diagnostics(client, 0)
+                    end
+                end
+            },
+        }
+    },
+    {
+        'antosha417/nvim-lsp-file-operations',
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+            'nvim-neo-tree/neo-tree.nvim',
+        },
+        opts = {
+        }
     },
 }

@@ -1,0 +1,27 @@
+zmodule joke/zim-mise
+
+zmodule archive
+zmodule fzf
+zmodule magic-enter
+
+zmodule joke/zim-github-cli
+zmodule joke/zim-starship
+zmodule joke/zim-yq
+
+zmodule kiesman99/zim-zoxide
+
+zmodule zsh-users/zsh-autosuggestions
+zmodule clarketm/zsh-completions --fpath src
+
+zmodule zdharma-continuum/fast-syntax-highlighting
+
+zmodule goarano/zsh-fzf-packagemanager
+zmodule wintermi/zsh-bob
+zmodule MichaelAquilina/zsh-you-should-use
+
+zmodule atuinsh/atuin
+
+zmodule completion
+
+zmodule Aloxaf/fzf-tab
+

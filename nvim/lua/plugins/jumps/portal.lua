@@ -9,7 +9,7 @@ return {
 
             local orig = pw.new
 
-            ---@diagnostic disable-next-line: duplicate-set-field
+            --- @diagnostic disable-next-line: duplicate-set-field
             function pw:new(label, content, window_options)
                 window_options.title = ('[%s] %s'):format(content.type, vim.api.nvim_buf_get_name(content.buffer))
                 return orig(pw, label, content, window_options)

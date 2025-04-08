@@ -13,13 +13,61 @@ return {
         'nvim-treesitter/nvim-treesitter',
         lazy = false,
         build = ':TSUpdate',
+        dependencies = {
+            'nvim-treesitter/nvim-treesitter-textobjects',
+        },
         config = function()
             require('nvim-treesitter.configs').setup({
                 highlight = {
                     enable = true,
                 },
+                incremental_selection = {
+                    enable = true,
+                    keymaps = {
+                        init_selection = 'v.',
+                        node_incremental = '.',
+                        scope_incremental = ';',
+                        node_decremental = ',',
+                    }
+                },
+                textobjects = {
+                    select = {
+                        enable = true,
+                        lookahead = true,
+                        keymaps = require('utils.textobjects').select_keymaps(),
+                    },
+                    swap = {
+                        enable = true,
+                        swap_next = {
+                            ['<C-M-;>'] = '@parameter.inner',
+                            ['<C-M-k>'] = {
+                                query = {
+                                    '@statement.outer', '@assignment.outer', '@conditional.outer', '@return.outer',
+                                    '@block.outer', '@class.outer', '@loop.outer', '@function.outer' }
+                            },
+                        },
+                        swap_previous = {
+                            ['<C-M-j>'] = '@parameter.inner',
+                            ['<C-M-l>'] = {
+                                query = {
+                                    '@statement.outer', '@assignment.outer', '@conditional.outer', '@return.outer',
+                                    '@block.outer', '@loop.outer', '@class.outer', '@function.outer'
+                                }
+                            },
+                        },
+                    },
+                },
             })
         end,
+    },
+    {
+        'aaronik/treewalker.nvim',
+        keys = {
+            { '<C-j>', '<cmd>Treewalker Left<cr>' },
+            { '<C-k>', '<cmd>Treewalker Down<cr>' },
+            { '<C-l>', '<cmd>Treewalker Up<cr>' },
+            { '<C-;>', '<cmd>Treewalker Right<cr>' },
+        }
     },
     {
         'andersevenrud/nvim_context_vt',
@@ -31,22 +79,6 @@ return {
             prefix = '»',
             highlight = 'Comment',
         }
-    },
-    {
-        'RRethy/nvim-treesitter-textsubjects',
-        config = function()
-            require('nvim-treesitter.configs').setup({
-                textsubjects = {
-                    enable = true,
-                    prev_selection = ',', -- (Optional) keymap to select the previous selection
-                    keymaps = {
-                        ['.'] = 'textsubjects-smart',
-                        ['a@'] = 'textsubjects-container-outer',
-                        ['i@'] = 'textsubjects-container-inner',
-                    },
-                },
-            })
-        end,
     },
     {
         'lukas-reineke/indent-blankline.nvim',
@@ -119,64 +151,15 @@ return {
             vim.g.rainbow_delimiters = {
                 strategy = {
                     [''] = require('rainbow-delimiters').strategy['global'],
+                    ['rust'] = require('rainbow-delimiters').strategy['global'],
                 },
                 query = {
                     [''] = 'rainbow-delimiters',
+                    ['lua'] = 'rainbow-blocks',
                 },
                 highlight = highlight,
             }
         end
-    },
-    {
-        'ziontee113/syntax-tree-surfer',
-        opts = {},
-        keys = {
-            {
-                '<C-A-l>',
-                function()
-                    vim.opt.opfunc = 'v:lua.STSSwapUpNormal_Dot'
-                    return 'g@l'
-                end,
-                silent = true,
-                expr = true
-            },
-            {
-                '<C-A-k>',
-                function()
-                    vim.opt.opfunc = 'v:lua.STSSwapDownNormal_Dot'
-                    return 'g@l'
-                end,
-                silent = true,
-                expr = true
-            },
-            {
-                '<C-A-j>',
-                function()
-                    vim.opt.opfunc = 'v:lua.STSSwapCurrentNodePrevNormal_Dot'
-                    return 'g@l'
-                end,
-                silent = true,
-                expr = true
-            },
-            {
-                '<C-A-;>',
-                function()
-                    vim.opt.opfunc = 'v:lua.STSSwapCurrentNodeNextNormal_Dot'
-                    return 'g@l'
-                end,
-                silent = true,
-                expr = true
-            },
-
-            { 'vr',    '<cmd>STSSelectMasterNode<cr>',      mode = 'n', noremap = true, silent = true },
-            { 'vc',    '<cmd>STSSelectCurrentNode<cr>',     mode = 'n', noremap = true, silent = true },
-            { '<C-;>', '<cmd>STSSelectNextSiblingNode<cr>', mode = 'x', noremap = true, silent = true },
-            { '<C-j>', '<cmd>STSSelectPrevSiblingNode<cr>', mode = 'x', noremap = true, silent = true },
-            { '<C-l>', '<cmd>STSSelectParentNode<cr>',      mode = 'x', noremap = true, silent = true },
-            { '<C-k>', '<cmd>STSSelectChildNode<cr>',       mode = 'x', noremap = true, silent = true },
-            { '<C-A-j>', '<cmd>STSSwapPrevVisual<cr>',        mode = 'x', noremap = true, silent = true },
-            { '<C-A-;>', '<cmd>STSSwapNextVisual<cr>',        mode = 'x', noremap = true, silent = true },
-        }
     },
     {
         'danymat/neogen',
@@ -184,26 +167,26 @@ return {
             snippet_engine = 'luasnip',
         },
         keys = {
-            { '<leader>ldd', function() require('neogen').generate({}) end, desc = 'Generate docs' },
-            { '<leader>ldf', function() require('neogen').generate({ type = 'func' }) end, desc = 'Generate docs for surrounding function' },
+            { '<leader>ldd', function() require('neogen').generate({}) end,                 desc = 'Generate docs' },
+            { '<leader>ldf', function() require('neogen').generate({ type = 'func' }) end,  desc = 'Generate docs for surrounding function' },
             { '<leader>ldc', function() require('neogen').generate({ type = 'class' }) end, desc = 'Generate docs for surrounding class' },
             { '<leader>ldt', function() require('neogen').generate({ type = 'class' }) end, desc = 'Generate docs for surrounding type' },
         },
     },
     {
-          'mizlan/iswap.nvim',
-          opts = {
-              hl_snipe = 'ErrorMsg',
-          },
-          keys = {
-              { '<leader>is', '<cmd>ISwapWith<cr>' },
-              { '<leader>iis', '<cmd>ISwap<cr>' },
-              { '<leader>in', '<cmd>ISwapNodeWith<cr>' },
-              { '<leader>iin', '<cmd>ISwapNode<cr>' },
-              { '<leader>im', '<cmd>IMoveWith<cr>' },
-              { '<leader>iim', '<cmd>IMove<cr>' },
-              { '<leader>iN', '<cmd>IMoveNodeWith<cr>' },
-              { '<leader>iiN', '<cmd>IMoveNode<cr>' },
-          }
+        'mizlan/iswap.nvim',
+        opts = {
+            hl_snipe = 'ErrorMsg',
+        },
+        keys = {
+            { '<leader>is',  '<cmd>ISwapWith<cr>' },
+            { '<leader>iis', '<cmd>ISwap<cr>' },
+            { '<leader>in',  '<cmd>ISwapNodeWith<cr>' },
+            { '<leader>iin', '<cmd>ISwapNode<cr>' },
+            { '<leader>im',  '<cmd>IMoveWith<cr>' },
+            { '<leader>iim', '<cmd>IMove<cr>' },
+            { '<leader>iN',  '<cmd>IMoveNodeWith<cr>' },
+            { '<leader>iiN', '<cmd>IMoveNode<cr>' },
+        }
     }
 }

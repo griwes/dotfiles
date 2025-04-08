@@ -39,189 +39,142 @@ return {
                     :use_key(punct))
             end
         end,
-        opts = {
-        },
+        opts = {},
     },
     {
-        'hrsh7th/nvim-cmp',
-        event = 'VeryLazy',
+        'saghen/blink.compat',
         dependencies = {
-            'L3MON4D3/LuaSnip',
-            'saadparwaiz1/cmp_luasnip',
-            'L3MON4D3/cmp-luasnip-choice',
-            'hrsh7th/cmp-nvim-lsp',
-            'hrsh7th/cmp-buffer',
-            'hrsh7th/cmp-path',
-            'hrsh7th/cmp-cmdline',
-            'rcarriga/cmp-dap', -- TODO: configure
-            'onsails/lspkind.nvim',
-            'petertriho/cmp-git',
-            'jmbuhr/otter.nvim',
         },
-        config = function()
-            local cmp = require('cmp')
-            local luasnip = require('luasnip')
+        opts = {
+            impersonate_nvim_cmp = true,
+        }
+    },
+    {
+        'saghen/blink.cmp',
+        dependencies = {
+            'rafamadriz/friendly-snippets',
+            'xzbdmw/colorful-menu.nvim',
+            'L3MON4D3/LuaSnip',
+            'saghen/blink.compat',
+        },
+        version = '*',
 
-            local lscmp = require('cmp_luasnip')
+        opts = {
+            snippets = {
+                preset = 'luasnip',
+            },
 
-            local has_words_before = function()
-                unpack = unpack or table.unpack
-                local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-                return col ~= 0 and
-                    vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]:sub(col, col):match('%s') == nil
-            end
-            cmp.setup({
-                experimental = {
-                    ghost_text = { hl_group = 'Comment' },
+            keymap = {
+                preset = 'none',
+                ['<C-space>'] = { 'show' },
+                ['<Tab>'] = { 'snippet_forward', 'select_next', 'fallback' },
+                ['<S-Tab>'] = { 'snippet_backward', 'select_prev', 'fallback' },
+                ['<Down>'] = { 'select_next', 'fallback' },
+                ['<Up>'] = { 'select_prev', 'fallback' },
+                ['<Esc>'] = { 'hide_signature', 'cancel', 'fallback' },
+                ['<C-d>'] = { 'scroll_documentation_down', 'fallback' },
+                ['<C-s>'] = { 'scroll_documentation_up', 'fallback' },
+                ['<Enter>'] = { 'accept', 'fallback' },
+                ['<C-Enter>'] = { 'select_and_accept' },
+            },
+
+            cmdline = {
+                enabled = true,
+
+                keymap = {
+                    ['<Enter>'] = { 'fallback' },
+                    ['<Down>'] = { 'fallback' },
+                    ['<Up>'] = { 'fallback' },
                 },
-                performance = {
-                    confirm_resolve_timeout = 1,
-                    throttle = 1,
+
+                completion = {
+                    ghost_text = {
+                        enabled = true,
+                    },
+
+                    menu = {
+                        auto_show = true,
+                    },
                 },
-                enabled = function()
-                    -- disable completion in comments
-                    local context = require('cmp.config.context')
-                    -- keep command mode completion enabled when cursor is in a comment
-                    if vim.api.nvim_get_mode().mode == 'c' then
-                        return true
-                    else
-                        return not context.in_treesitter_capture('comment')
-                            and not context.in_syntax_group('Comment')
-                            and vim.bo[0].filetype ~= 'TelescopePrompt'
-                    end
-                end,
-                matching = {
-                    disallow_fuzzy_matching = true,
-                    disallow_fullfuzzy_matching = false,
-                    disallow_partial_fuzzy_matching = false,
-                    disallow_prefix_unmatching = false,
-                    disallow_partial_matching = false,
+            },
+
+            --[[ term = {
+                enabled = true,
+                sources = { 'path', 'buffer' },
+            }, ]]
+
+            completion = {
+                keyword = {
+                    range = 'full',
                 },
-                formatting = {
-                    format = require('lspkind').cmp_format({
-                        mode = 'symbol_text',
-                        maxwidth = 50,
-                        ellipsis_char = '…',
-                        menu = {
-                            buffer = '[Buffer] ',
-                            nvim_lsp = '[LSP] ',
-                            luasnip = '[LuaSnip] ',
-                            git = '[Git] ',
-                            path = '[Path] ',
-                            otter = '[Otter] ',
+
+                list = {
+                    selection = {
+                        preselect = false,
+                        auto_insert = true,
+                    },
+                },
+
+                menu = {
+                    border = 'rounded',
+                    max_height = 15,
+
+                    draw = {
+                        treesitter = { 'lsp' },
+
+                        columns = { { 'source_name' }, { 'kind_icon' }, { 'label' } },
+
+                        components = {
+                            label = {
+                                text = function(ctx)
+                                    return require('colorful-menu').blink_components_text(ctx)
+                                end,
+                                highlight = function(ctx)
+                                    return require('colorful-menu').blink_components_highlight(ctx)
+                                end,
+                            },
                         },
-                        show_labelDetails = true,
-                        before = function(entry, vim_item)
-                            if entry.source.name == 'luasnip' then
-                                vim_item.menu = (vim_item.menu or '') ..
-                                    require('luasnip').get_id_snippet(entry.completion_item.data.snip_id):get_docstring()
-                                if string.len(vim_item.menu) > 50 then
-                                    vim_item.menu = string.sub(vim_item.menu, 1, 51) .. '…'
-                                end
-                                vim_item.abbr = ' ' .. vim_item.abbr
-                            end
-                            return vim_item
-                        end,
-                    }),
+                    },
                 },
-                preselect = cmp.PreselectMode.None,
-                snippet = {
-                    expand = function(args)
-                        require('luasnip').lsp_expand(args.body)
-                    end,
+
+                documentation = {
+                    auto_show = true,
+                    window = {
+                        border = 'rounded',
+                    },
                 },
+
+                ghost_text = {
+                    enabled = true,
+                    show_without_selection = false,
+                },
+            },
+
+            signature = {
+                enabled = true,
+
+                trigger = {
+                    show_on_keyword = true,
+                    show_on_insert = true,
+                },
+
                 window = {
-                    completion = cmp.config.window.bordered {
-                        winhighlight = 'Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None',
-                    },
-                    documentation = cmp.config.window.bordered {
-                        winhighlight = 'Normal:Normal,FloatBorder:FloatBorder,CursorLine:Visual,Search:None',
-                    },
+                    border = 'rounded',
                 },
-                sorting = {
-                    comparators = {
-                        cmp.config.compare.offset,
-                        cmp.config.compare.exact,
-                        ---@diagnostic disable-next-line: assign-type-mismatch
-                        cmp.config.compare.recently_used,
-                        require('clangd_extensions.cmp_scores'),
-                        cmp.config.compare.kind,
-                        cmp.config.compare.sort_text,
-                        cmp.config.compare.length,
-                        cmp.config.compare.order,
-                    },
-                },
-                mapping = cmp.mapping.preset.insert({
-                    ['<C-s>'] = cmp.mapping.scroll_docs(-4),
-                    ['<C-d>'] = cmp.mapping.scroll_docs(4),
-                    ['<C-Space>'] = cmp.mapping.complete(),
-                    ['<C-e>'] = cmp.mapping.abort(),
-                    ['<CR>'] = cmp.mapping.confirm({ select = true, behavior = cmp.ConfirmBehavior.Insert }),
-                    ['<Tab>'] = cmp.mapping(function(fallback)
-                        if cmp.visible() then
-                            cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-                        elseif luasnip.expandable() then
-                            luasnip.expand()
-                        elseif luasnip.expand_or_locally_jumpable() then
-                            luasnip.expand_or_jump()
-                        elseif has_words_before() then
-                            cmp.complete()
-                        else
-                            fallback()
-                        end
-                    end, { 'i', 's' }),
-                    ['<S-Tab>'] = cmp.mapping(function(fallback)
-                        if cmp.visible() then
-                            cmp.select_prev_item({ behavior = cmp.SelectBehavior.Select })
-                        elseif luasnip.jumpable(-1) then
-                            luasnip.jump(-1)
-                        else
-                            fallback()
-                        end
-                    end, { 'i', 's' }),
-                }),
-                sources = cmp.config.sources({
-                    { name = 'lazydev' },
-                }, {
-                    { name = 'otter' },
-                }, {
-                    { name = 'luasnip', option = { show_autosnippets = true } },
-                    { name = 'luasnip_choice' },
-                    { name = 'nvim_lsp' },
-                }, {
-                    { name = 'git' },
-                    { name = 'buffer' },
-                    { name = 'path' },
-                })
-            })
+            },
 
-            cmp.get_entries()
+            appearance = {
+                use_nvim_cmp_as_default = true,
+                nerd_font_variant = 'mono',
+            },
 
-            cmp.setup.cmdline({ '/', '?' }, {
-                mapping = cmp.mapping.preset.cmdline(),
-                sources = {
-                    { name = 'buffer' }
+            sources = {
+                default = { 'lsp', 'path', 'snippets', 'buffer' },
+
+                providers = {
                 }
-            })
-
-            cmp.setup.cmdline(':', {
-                mapping = cmp.mapping.preset.cmdline(),
-                sources = cmp.config.sources({
-                    { name = 'path' }
-                }, {
-                    {
-                        name = 'cmdline',
-                        option = {
-                            ignore_cmds = { 'Man', '!' }
-                        }
-                    }
-                })
-            })
-
-            local cmp_autopairs = require('nvim-autopairs.completion.cmp')
-            cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
-
-            require('cmp_git').setup()
-        end
+            },
+        },
+        opts_extend = { 'sources.default' },
     },
 }

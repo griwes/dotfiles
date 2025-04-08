@@ -13,12 +13,13 @@ return {
             'molecule-man/telescope-menufacture',
             'olimorris/persisted.nvim',
             'nvim-telescope/telescope-dap.nvim',      -- TODO: configure keybinds
-            'aaronhallaert/advanced-git-search.nvim', -- TODO: configure keybinds
             'rcarriga/nvim-notify',
             'mfussenegger/nvim-dap',
             'tiagovla/scope.nvim',
             'johmsalas/text-case.nvim',
             'gbprod/yanky.nvim',
+            'tsakirist/telescope-lazy.nvim',
+            'catgoose/telescope-helpgrep.nvim',
         },
         init = function()
             local utils = require('utils.lsp')
@@ -116,13 +117,13 @@ return {
                         mappings = {
                             i = { ['<CR>'] = actions.select_drop },
                             n = { ['<CR>'] = actions.select_drop },
-                        }
+                        },
                     },
                     lsp_type_definitions = {
                         mappings = {
                             i = { ['<CR>'] = actions.select_drop },
                             n = { ['<CR>'] = actions.select_drop },
-                        }
+                        },
                     },
                 },
                 extensions = {
@@ -131,14 +132,17 @@ return {
                             main_menu = { [{ 'i', 'n' }] = '<C-t>' },
                         },
                     },
-                    advanced_git_search = {
-                        diff_plugin = 'diffview',
-                    },
+                    helpgrep = {
+                        mappings = {
+                            n = { ['<CR>'] = actions.select_default },
+                            i = { ['<CR>'] = actions.select_default },
+                        }
+                    }
                 }
             })
 
             vim.cmd [[ highlight TelescopeBorder guifg=#7ad5d6 ]]
-            vim.cmd 'autocmd User TelescopePreviewerLoaded setlocal number'
+            vim.cmd [[ autocmd User TelescopePreviewerLoaded setlocal number ]]
 
             -- https://github.com/nvim-telescope/telescope.nvim/issues/2027
             vim.api.nvim_create_autocmd('WinLeave', {
@@ -153,12 +157,13 @@ return {
             telescope.load_extension('menufacture')
             telescope.load_extension('dap')
             telescope.load_extension('persisted')
-            telescope.load_extension('advanced_git_search')
             telescope.load_extension('notify')
             telescope.load_extension('scope')
             telescope.load_extension('grapple')
             telescope.load_extension('textcase')
             telescope.load_extension('yank_history')
+            telescope.load_extension('lazy')
+            telescope.load_extension('helpgrep')
         end,
         cmd = {
             'Telescope'
@@ -170,14 +175,8 @@ return {
             { '<C-m>',       function() require('telescope').extensions.menufacture.live_grep() end },
             { '<C-g>',       function() require('telescope').extensions.menufacture.git_files() end },
             { '<C-b>',       '<cmd>Telescope buffers<cr>' },
-            { '<C-j>',       '<cmd>Telescope jumplist<cr>' },
+            { '<C-v>',       '<cmd>Telescope jumplist<cr>' },
             { '<C-q>',       '<cmd>Telescope quickfix<cr>' },
-
-            { '<leader>gc',  '<cmd>Telescope git_commits<cr>' },
-            { '<leader>gb',  '<cmd>Telescope git_branches<cr>' },
-            { '<leader>ghb', '<cmd>Telescope git_bcommits<cr>' },
-            { '<leader>ghr', '<cmd>Telescope git_bcommits_range<cr>' },
-            { '<leader>gss', '<cmd>Telescope git_stash<cr>' },
 
             { '<leader>dc',  '<cmd>Telescope dap configurations<cr>' },
             { '<leader>db',  '<cmd>Telescope dap list_breakpoints<cr>' },

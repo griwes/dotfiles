@@ -1,106 +1,76 @@
-ZVM_INIT_MODE=sourcing
-ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
-ZVM_VI_INSERT_ESCAPE_BINDKEY=jk
+ZIM_HOME=~/.local/share/zim
 
-POWERLEVEL9K_DISABLE_CONFIGURATION_WIZARD=true
-
-export ADOTDIR=~/.local/share/zsh/antigen
-
-if [ ! -f "${ADOTDIR}/antigen.zsh" ]
-then
-    echo "Downloading antigen..."
-    mkdir -p "${ADOTDIR}"
-    curl -L git.io/antigen > "${ADOTDIR}/antigen.zsh" >/dev/null
+if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
+  curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh \
+      https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
 fi
-source "${ADOTDIR}/antigen.zsh"
 
-antigen use oh-my-zsh
-#antigen theme romkatv/powerlevel10k
+if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+  source ${ZIM_HOME}/zimfw.zsh init -q
+fi
 
-antigen bundle debian
-antigen bundle docker
-antigen bundle extract
-antigen bundle fbterm
-antigen bundle git
-antigen bundle gpg-agent
-antigen bundle pip
-antigen bundle ssh-agent
-antigen bundle svn-fast-info
-antigen bundle tig
-
-antigen bundle jeffreytse/zsh-vi-mode
-
-antigen bundle per-directory-history
-
-antigen bundle Aloxaf/fzf-tab
-
-antigen bundle zsh-users/zsh-autosuggestions
-antigen bundle zsh-users/zsh-completions
-
-antigen bundle popstas/zsh-command-time
-antigen bundle MichaelAquilina/zsh-you-should-use
-
-antigen bundle supercrabtree/k
-
-antigen bundle z-shell/F-Sy-H --branch=main
-antigen bundle hchbaw/zce.zsh
-# last bundle!
-antigen bundle zsh-users/zsh-history-substring-search
-
-antigen apply
-
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-#source ~/.p10k.zsh
-
-HISTFILE=~/.zsh_history
-HISTSIZE=999999999
-SAVEHIST=999999999
-setopt INC_APPEND_HISTORY_TIME
-
-# zsh-history-substring-search configuration
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
-HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1
-
-bindkey -s "^L" 'clear && tmux clear-history\n'
-
-zvm_bindkey vicmd ',f' zce
-
-# remind about things... after
+export PATH="$HOME/.local/bin:$PATH"
 export YSU_MESSAGE_POSITION="after"
+export YSU_MODE=ALL
 
-# welcome to glorious new future
-EDITOR=nvim
-alias vim=nvim
+source ${ZIM_HOME}/init.zsh
 
-# and to the less glorious too
-alias tmux='systemd-run --scope --user --quiet tmux'
+zstyle ':completion:*' format '[%d]'
 
-# though there's still some glory even with systemd-run
-alias iceccmake='CCACHE_PREFIX=icecc systemd-run --scope --user -p MemoryLimit=100G nice -n 10 make -j'
+FZF_GROUP_COLORS=(
+    $'\033[34m'
+    $'\033[32m'
+    $'\033[33m'
+    $'\033[35m'
+    $'\033[31m'
+    $'\033[94m'
+    $'\033[92m'
+    $'\033[93m'
+    $'\033[95m'
+    $'\033[91m'
+)
+zstyle ':fzf-tab:*' group-colors $FZF_GROUP_COLORS
 
-# when in tmux, ring a bell every time a command finishes
-precmd() {
-    if [ -n ${TMUX+x} ]
-    then
-        echo -n -e "\a"
-    fi
-}
+alias ls='lsd --group-directories-first'
+alias ll='lsd -l --group-directories-first'
+alias la='lsd -la --group-directories-first'
+alias tree='lsd -l --group-directories-first --tree --depth=2'
 
-# override `ssh` to invoke magic necessary by the tmux status line
-# NOTE: that will only work on posix targets. use \ssh to connect to, say, windows
-ssh() {
-    ~/.tmux/scripts/fauxssh $@
-}
+alias cd='z'
 
-# same, but for eternal terminal
-et() {
-    ~/.tmux/scripts/fauxet $@
-}
+typeset -g -A key
 
-export EDITOR='nvim'
-export PATH="$HOME/.cargo/bin:$HOME/.local/share/bob/nvim-bin:$HOME/.local/bin:$PATH"
+key[Home]="${terminfo[khome]}"
+key[End]="${terminfo[kend]}"
+key[Insert]="${terminfo[kich1]}"
+key[Backspace]="${terminfo[kbs]}"
+key[Delete]="${terminfo[kdch1]}"
+key[Up]="${terminfo[kcuu1]}"
+key[Down]="${terminfo[kcud1]}"
+key[Left]="${terminfo[kcub1]}"
+key[Right]="${terminfo[kcuf1]}"
+key[PageUp]="${terminfo[kpp]}"
+key[PageDown]="${terminfo[knp]}"
+key[Shift-Tab]="${terminfo[kcbt]}"
+key[Control-Left]="${terminfo[kLFT5]}"
+key[Control-Right]="${terminfo[kRIT5]}"
 
-eval "$(starship init zsh)"
+[[ -n "${key[Home]}"          ]] && bindkey -- "${key[Home]}"          beginning-of-line
+[[ -n "${key[End]}"           ]] && bindkey -- "${key[End]}"           end-of-line
+[[ -n "${key[Insert]}"        ]] && bindkey -- "${key[Insert]}"        overwrite-mode
+[[ -n "${key[Backspace]}"     ]] && bindkey -- "${key[Backspace]}"     backward-delete-char
+[[ -n "${key[Delete]}"        ]] && bindkey -- "${key[Delete]}"        delete-char
+[[ -n "${key[Left]}"          ]] && bindkey -- "${key[Left]}"          backward-char
+[[ -n "${key[Right]}"         ]] && bindkey -- "${key[Right]}"         forward-char
+[[ -n "${key[Control-Left]}"  ]] && bindkey -- "${key[Control-Left]}"  backward-word
+[[ -n "${key[Control-Right]}" ]] && bindkey -- "${key[Control-Right]}" forward-word
 
-eval $(thefuck --alias)
+# Finally, make sure the terminal is in application mode, when zle is
+# active. Only then are the values from $terminfo valid.
+if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )); then
+	autoload -Uz add-zle-hook-widget
+	function zle_application_mode_start { echoti smkx }
+	function zle_application_mode_stop { echoti rmkx }
+	add-zle-hook-widget -Uz zle-line-init zle_application_mode_start
+	add-zle-hook-widget -Uz zle-line-finish zle_application_mode_stop
+fi

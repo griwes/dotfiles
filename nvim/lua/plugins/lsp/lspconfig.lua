@@ -15,6 +15,7 @@ return {
         },
         config = function()
             local lspc = require('lspconfig')
+            local lspc_confs = require('lspconfig.configs')
             local utils = require('utils.lsp')
 
             local options = {
@@ -43,6 +44,21 @@ return {
                                 },
                             },
                         },
+                    })
+                end,
+                yamlls = function()
+                    lspc.yamlls.setup({
+                        settings = {
+                            yaml = {
+                                format = {
+                                    enable = true,
+                                    bracketSpacing = true,
+                                },
+                                schemaStore = {
+                                    enable = true,
+                                },
+                            },
+                        }
                     })
                 end,
             })

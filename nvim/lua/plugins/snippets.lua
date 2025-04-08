@@ -45,12 +45,6 @@ return {
         end,
     },
     {
-        'L3MON4D3/cmp-luasnip-choice',
-        opts = {
-            auto_open = true,
-        },
-    },
-    {
         'chrisgrieser/nvim-scissors',
         dependencies = {
             'telescope/telescope.nvim',

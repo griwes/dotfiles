@@ -1,0 +1,10 @@
+[Unit]
+Description=atuin shell history daemon
+Requires=atuin-daemon.socket
+
+[Service]
+ExecStart=%h/.local/bin/mise exec cargo:atuin -- atuin daemon
+
+[Install]
+Also=atuin-daemon.socket
+WantedBy=default.target

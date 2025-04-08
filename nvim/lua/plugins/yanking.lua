@@ -76,7 +76,7 @@ return {
             { '=P',      '<Plug>(YankyPutBeforeFilter)',           desc = 'Put before applying a filter' },
 
             {
-                'lp',
+                ',lp',
                 function()
                     require('yanky.textobj').last_put()
                 end,

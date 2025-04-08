@@ -79,7 +79,9 @@ return {
         'chrisgrieser/nvim-various-textobjs',
         event = 'VeryLazy',
         opts = {
-            useDefaultKeymaps = true,
+            keymaps = {
+                useDefaults = true,
+            }
         },
     },
     {
@@ -175,16 +177,6 @@ return {
             },
         },
     },
-    --[[ {
-        -- TODO: enable when https://github.com/utilyre/sentiment.nvim/issues/11 is fixed
-        'utilyre/sentiment.nvim',
-        event = 'VeryLazy',
-        opts = {
-        },
-        init = function()
-            vim.g.loaded_matchparen = 1
-        end,
-    }, ]]
     {
         'axieax/typo.nvim',
         event = 'VeryLazy',

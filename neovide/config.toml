@@ -1,0 +1,26 @@
+[font]
+size = 11.5
+hinting = "full"
+edging = "subpixelantialias"
+
+[[font.normal]]
+family = "Iosevka Nerd Font"
+style = "Light"
+
+[[font.bold]]
+family = "Iosevka Nerd Font"
+style = "SemiBold"
+
+[[font.italic]]
+family = "Iosevka Nerd Font"
+style = "Light Oblique"
+
+[[font.bold_italic]]
+family = "Iosevka Nerd Font"
+style = "SemiBold Oblique"
+
+[font.features]
+"Iosevka Nerd Font" = ["+calt", "cv73=3", "cv74=6", "cv76=2", "VXAG=2", "VSAB=3", "VSAI=2", "VSAL=5", "VSAO=3", "VSAP=2", "VLAA=2", "VLAC=2", "VLAD=2", "VLAE=2", "VLAF=2", "VLAG=2", "+CLIK", "+HSKL"]
+
+[box-drawing]
+mode = "font-glyph"

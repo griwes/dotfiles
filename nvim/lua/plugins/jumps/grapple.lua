@@ -1,13 +1,13 @@
 return {
     {
         -- TODO: actually configure things like scopes
-        -- configure a way to create named grapples
+        -- TODO: configure a way to create named grapples
         'cbochs/grapple.nvim',
         event = 'VeryLazy',
         init = function()
             local tag_actions = require('grapple.tag_actions')
 
-            ---@diagnostic disable-next-line: duplicate-set-field
+            --- @diagnostic disable-next-line: duplicate-set-field
             function tag_actions.select(opts)
                 require("grapple").select({
                     path = opts.path,

@@ -33,8 +33,8 @@ padding-right = 1
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = "iosevkacustom-regular:size=9.5;2"
-font-1 = "iosevkacustom-extrabold:size=9.5;2"
+font-0 = "iosevkanf-light:size=12;2"
+font-1 = "iosevkanf-semibold:size=12;2"
 
 modules-left =
 modules-center = title
@@ -65,8 +65,8 @@ padding-right = 1
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = "iosevkacustom-regular:size=9.5;2"
-font-1 = "iosevkacustom-extrabold:size=9.5;2"
+font-0 = "iosevkanf-light:size=12;2"
+font-1 = "iosevkanf-semibold:size=12;2"
 
 modules-left =
 modules-center = i3

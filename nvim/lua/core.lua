@@ -84,13 +84,18 @@ vim.g.localleader = ','
 -- allow more tabs, will be useful with tabulature
 vim.g.tabpagemax = 1000
 
-vim.opt.laststatus = 3
-vim.opt.guifont = 'IosevkaCustom Nerd Font Light:h10:#h-slight:#e-subpixelantialias'
+vim.o.laststatus = 3
+vim.o.linespace = -1
 
 vim.g.neovide_transparency = 0.85
+-- normal_opacity is better, except for the neovim bug that makes no background be...
+-- black in transparency contexts. ugh.
+-- vim.g.neovide_normal_opacity = 0.85
+vim.g.neovide_refresh_rate = 120
 vim.g.neovide_underline_stroke_scale = 0.5
 vim.g.neovide_cursor_animation_length = 0.02
 vim.g.neovide_scroll_animation_length = 0.15
 
 vim.g.neovide_floating_blur_amount_x = 2.5
 vim.g.neovide_floating_blur_amount_y = 2.5
+vim.g.neovide_floating_corner_radius = 0.5

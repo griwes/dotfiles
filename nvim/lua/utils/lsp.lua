@@ -3,7 +3,11 @@ local capabilities = nil
 
 local M = {
     add_callback = function(callback)
-        on_attach_callbacks[#on_attach_callbacks + 1] = callback
+        local idx = #on_attach_callbacks + 1
+        on_attach_callbacks[idx] = callback
+        return function()
+            on_attach_callbacks[idx] = nil
+        end
     end,
 
     attach_callbacks = function(client, bufnr)
@@ -16,10 +20,9 @@ local M = {
     get_capabilities = function()
         if capabilities == nil then
             capabilities = vim.lsp.protocol.make_client_capabilities()
-            capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-            capabilities.textDocument.completion.completionItem.snippetSupport = true
+            capabilities = require('blink.cmp').get_lsp_capabilities(capabilities)
+            capabilities = vim.tbl_extend('force', capabilities, require('lsp-file-operations').default_capabilities())
         end
-
         return capabilities
     end
 }
@@ -90,4 +93,6 @@ M.add_callback(function(client, bufnr)
         buffer = bufnr
     } })
 end)
+
 return M
+

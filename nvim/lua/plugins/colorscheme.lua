@@ -42,7 +42,7 @@ return {
 
                     LspInlayHint = { style = 'italic' },
                     LspReferenceText = { fg = '', bg = '', style = 'bold,underline' },
-                    LspSignatureActiveParameter = { fg = 'palette.fg2', bg = '', style = 'bold,underline' },
+                    LspSignatureActiveParameter = { fg = '', style = 'bold,italic,underline', sp = 'palette.white' },
 
                     ['@namespace'] = { fg = 'palette.cyan.dim' },
                     ['@variable.parameter'] = { link = '@variable' },
@@ -57,8 +57,14 @@ return {
 
                     ['@function.builtin'] = { fg = '' },
                     ['@constant.builtin'] = { link = '@constant' },
+                    ['@function.method.call'] = { link = 'Function' },
 
-                    ['@lsp.type.concept'] = { fg = 'palette.green', style = 'italic' },
+                    -- treesitter, for some reason, throws these onto dependent function calls
+                    -- but that's wrong, those should be highlighted as functions
+                    ['@constructor.cpp'] = { link = 'Function' },
+                    ['@constructor.cuda'] = { link = 'Function' },
+
+                    ['@lsp.type.concept'] = { link = '@variable.builtin' },
                     ['@lsp.type.variable'] = { link = '@variable' },
                     ['@lsp.type.parameter'] = { link = '@variable' },
 
@@ -67,6 +73,9 @@ return {
 
                     ['@lsp.typemod.type.defaultLibrary'] = { fg = '' },
                     ['@lsp.typemod.class.defaultLibrary'] = { fg = '' },
+                    ['@lsp.typemod.variable.defaultLibrary'] = { fg = '' },
+                    ['@lsp.typemod.enum.defaultLibrary'] = { fg = '' },
+                    ['@lsp.typemod.enumMember.defaultLibrary'] = { fg = '' },
                     ['@lsp.typemod.typeParameter.readonly'] = { link = 'Constant' },
                     ['@lsp.typemod.variable.fileScope'] = { style = 'italic' },
 
@@ -75,7 +84,7 @@ return {
                     GitSignsAddLnInline = { link = 'DiffInline' },
                     GitSignsChangeInline = { link = 'DiffInline' },
                     GitSignsChangeLnInline = { link = 'DiffInline' },
-                    GitSignsDeleteInline = { style = 'italic,bold,underdotted' },
+                    GitSignsDeleteInline = { link = 'DiffInline' },
                     GitSignsDeleteLnInline = { link = 'DiffInline' },
 
                     DiffAdd = { fg = 'palette.green', style = '' },
@@ -100,22 +109,27 @@ return {
 
                     BqfPreviewRange = { link = 'Visual' },
                     BqfPreviewCursor = { link = 'Visual' },
+
+                    BlinkCmpMenu = { link = 'NormalFloat' },
+                    BlinkCmpMenuBorder = { link = 'FloatBorder' },
+                    BlinkCmpMenuSelection = { link = 'Visual' },
+                    BlinkCmpDocBorder = { link = 'FloatBorder' },
+                    BlinkCmpSignatureHelpBorder = { link = 'FloatBorder' },
+                    BlinkCmpGhostText = { link = 'Comment' },
                 },
             },
         },
         config = function(_, opts)
             require('nightfox').setup(opts)
 
-            vim.cmd [[ colorscheme nightfox ]]
+            vim.cmd('colorscheme nightfox')
         end,
     },
     {
         'nvim-tree/nvim-web-devicons',
-        lazy = false,
     },
     {
         'rachartier/tiny-devicons-auto-colors.nvim',
-        lazy = false,
         dependencies = {
             'nvim-tree/nvim-web-devicons'
         },

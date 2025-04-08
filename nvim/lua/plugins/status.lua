@@ -11,8 +11,8 @@ return {
                     ignore_focus = {
                         -- list extension windows that aren't supposed to steal focus here
                     },
-                    component_separators = { left = ' ', right = ' ' },
-                    section_separators = { left = ' ', right = ' ' },
+                    component_separators = { left = '', right = '' },
+                    section_separators = { left = '', right = '' },
                 },
                 sections = {
                     lualine_a = { 'mode' },
@@ -67,9 +67,9 @@ return {
                     borders = false,
                 },
                 placement = {
-                    vertical = 'top',
+                    vertical = 'bottom',
                 },
-                zindex = 25,
+                zindex = 1,
             },
             render = function(props)
                 local function get_diagnostic_label()
@@ -118,9 +118,15 @@ return {
                 local buffer = {
                     { get_diagnostic_label() },
                     { get_git_diff() },
-                    { ft_icon,                                   guifg = ft_color },
+                    {
+                        ft_icon,
+                        guifg = ft_color
+                    },
                     { ' ' },
-                    { filename,                                  gui = vim.bo[props.buf].modified and 'italic' or '' },
+                    {
+                        filename,
+                        gui = vim.bo[props.buf].modified and 'italic' or ''
+                    },
                     { vim.bo[props.buf].modified and '[+]' or '' },
                     { vim.bo[props.buf].readonly and '[-]' or '' },
                 }
@@ -131,12 +137,14 @@ return {
     {
         -- TODO: hide some sections when not in the current window
         'luukvbaal/statuscol.nvim',
-        branch = '0.10',
         config = function()
             local builtin = require('statuscol.builtin')
             require('statuscol').setup({
                 thousands = nil,
-                relculright = true,
+                relculright = false,
+                bt_ignore = {
+                    'terminal',
+                },
                 segments = {
                     {
                         text = { builtin.foldfunc },
@@ -147,7 +155,7 @@ return {
                     },
                     {
                         sign = {
-                            namespace = { 'vim.lsp.*/diagnostic/signs' },
+                            namespace = { 'nvim.vim.lsp.*.diagnostic.signs' },
                             maxwidth = 1,
                             colwidth = 2,
                             auto = true,
@@ -228,6 +236,12 @@ return {
             show_modified = true,
         }
     },
+    --[[ {
+        'lewis6991/satellite.nvim',
+        opts = {
+            current_only = true,
+        }
+    } ]]
     --[[
     {
         'EtiamNullam/fold-ribbon.nvim',
@@ -235,5 +249,5 @@ return {
             require('fold-ribbon').setup()
         end,
     },
-    ]]--
+    ]] --
 }
