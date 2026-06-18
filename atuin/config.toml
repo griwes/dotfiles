@@ -1,0 +1,9 @@
+filter_mode_shell_up_key_binding = "directory"
+enter_accept = false
+
+[sync]
+records = true
+
+[daemon]
+enabled = true
+systemd_socket = true

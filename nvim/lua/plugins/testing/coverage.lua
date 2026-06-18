@@ -1,8 +1,14 @@
 return {
     {
         'andythigpen/nvim-coverage',
-        lazy = false,
-        opts = {
-        }
-    }
+        cmd = {
+            'Coverage',
+            'CoverageClear',
+            'CoverageLoad',
+            'CoverageShow',
+            'CoverageSummary',
+            'CoverageToggle',
+        },
+        opts = {},
+    },
 }

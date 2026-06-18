@@ -1,7 +1,45 @@
 return {
     {
         'Civitasv/cmake-tools.nvim',
+        cmd = {
+            'CMakeBuild',
+            'CMakeBuildCurrentFile',
+            'CMakeClean',
+            'CMakeCloseExecutor',
+            'CMakeCloseRunner',
+            'CMakeDebug',
+            'CMakeDebugCurrentFile',
+            'CMakeGenerate',
+            'CMakeInstall',
+            'CMakeLaunchArgs',
+            'CMakeOpenCache',
+            'CMakeOpenExecutor',
+            'CMakeOpenRunner',
+            'CMakeQuickBuild',
+            'CMakeQuickDebug',
+            'CMakeQuickRun',
+            'CMakeQuickStart',
+            'CMakeRun',
+            'CMakeRunCurrentFile',
+            'CMakeRunTest',
+            'CMakeSelectBuildDir',
+            'CMakeSelectBuildPreset',
+            'CMakeSelectBuildTarget',
+            'CMakeSelectBuildType',
+            'CMakeSelectConfigurePreset',
+            'CMakeSelectCwd',
+            'CMakeSelectKit',
+            'CMakeSelectLaunchTarget',
+            'CMakeSelectTestPreset',
+            'CMakeSettings',
+            'CMakeShowTargetFiles',
+            'CMakeStopExecutor',
+            'CMakeStopRunner',
+            'CMakeTargetSettings',
+        },
         opts = {
+            -- mise owns the cmake/ninja binaries; this plugin owns the
+            -- editor-side CMake workflow and delegates execution UI to Overseer.
             cmake_executor = {
                 name = 'overseer',
                 opts = {},
@@ -11,5 +49,5 @@ return {
                 opts = {},
             },
         },
-    }
+    },
 }

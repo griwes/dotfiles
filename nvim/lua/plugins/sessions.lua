@@ -10,7 +10,6 @@ return {
                 use_git_branch = true,
                 autoload = true,
             })
-        end
+        end,
     },
 }
-

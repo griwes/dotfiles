@@ -1,88 +1,26 @@
 return {
     {
         'folke/lazydev.nvim',
-        lazy = false,
+        ft = 'lua',
+        -- Lazydev owns LuaLS workspace/library policy. Blink's lazydev
+        -- provider only exposes that policy through completion UI.
         opts = {
+            library = {
+                { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
+            },
+            enabled = function()
+                return vim.g.lazydev_enabled == nil and true or vim.g.lazydev_enabled
+            end,
         },
     },
     {
         'neovim/nvim-lspconfig',
         lazy = false,
         dependencies = {
-            'williamboman/mason-lspconfig.nvim',
-            'SmiteshP/nvim-navbuddy',
-            'folke/neodev.nvim',
+            'mason-org/mason-lspconfig.nvim',
         },
-        config = function()
-            local lspc = require('lspconfig')
-            local lspc_confs = require('lspconfig.configs')
-            local utils = require('utils.lsp')
-
-            local options = {
-                on_attach = utils.attach_callbacks,
-                capabilities = utils.get_capabilities(),
-            }
-
-            require('mason-lspconfig').setup_handlers({
-                function(server_name)
-                    lspc[server_name].setup(options)
-                end,
-
-                clangd = function() end,
-                rust_analyzer = function()
-                    lspc.rust_analyzer.setup({
-                        on_attach = utils.attach_callbacks,
-                        capabilities = utils.get_capabilities(),
-                        settings = {
-                            ['rust-analyzer'] = {
-                                checkOnSave = true,
-                                diagnostics = {
-                                    enable = false,
-                                    experimental = {
-                                        enable = false,
-                                    },
-                                },
-                            },
-                        },
-                    })
-                end,
-                yamlls = function()
-                    lspc.yamlls.setup({
-                        settings = {
-                            yaml = {
-                                format = {
-                                    enable = true,
-                                    bracketSpacing = true,
-                                },
-                                schemaStore = {
-                                    enable = true,
-                                },
-                            },
-                        }
-                    })
-                end,
-            })
-            local sign_text = {
-                [vim.diagnostic.severity.ERROR] = ' ',
-                [vim.diagnostic.severity.WARN] = '󰀪 ',
-                [vim.diagnostic.severity.INFO] = ' ',
-                [vim.diagnostic.severity.HINT] = ' ',
-            }
-
-            vim.diagnostic.config({
-                signs = {
-                    text = sign_text
-                },
-                severity_sort = true,
-                update_in_insert = true,
-            })
-        end
-    },
-    {
-        'yorickpeterse/nvim-dd',
-        lazy = false,
-        opts = {
-            timeout = 250,
-        },
+        init = function()
+            require('config.lsp')
+        end,
     },
 }

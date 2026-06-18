@@ -1,0 +1,8 @@
+[Unit]
+Description=jolt daemon
+PartOf=i3-session.target
+
+[Service]
+ExecStart=%h/.local/bin/mise exec cargo:jolt-tui -- jolt daemon start
+Restart=on-failure
+RestartSec=5s

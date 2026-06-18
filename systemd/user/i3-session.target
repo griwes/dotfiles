@@ -1,0 +1,11 @@
+[Unit]
+Description=i3 session services
+Wants=wallpaper-rotate.service
+Wants=i3-workspace-groups.service
+Wants=jolt-daemon.service
+Wants=keyboard-layout.service
+Wants=nm-applet.service
+Wants=picom.service
+Wants=polybar.service
+Wants=polybar-screen-watcher.service
+Wants=tuned-switcher.service

@@ -1,3 +1,11 @@
+local function various_textobj(name, ...)
+    local args = { ... }
+
+    return function()
+        require('various-textobjs')[name](unpack(args))
+    end
+end
+
 return {
     {
         'krady21/compiler-explorer.nvim',
@@ -12,18 +20,11 @@ return {
         },
     },
     {
-        -- TODO: configure keybinds
-        'AckslD/nvim-FeMaco.lua',
-        event = 'VeryLazy',
-        opts = {},
-    },
-    {
-        -- TODO: configure keybinds
-        'riddlew/swap-split.nvim',
-    },
-    {
-        -- TODO: configure
         'stevearc/oil.nvim',
+        dependencies = {
+            'JezerM/oil-lsp-diagnostics.nvim',
+            'malewicz1337/oil-git.nvim',
+        },
         opts = {
             constrain_cursor = 'editable',
             columns = {
@@ -46,7 +47,7 @@ return {
                         return hls
                     end,
                 },
-                { 'size',  highlight = 'Number' },
+                { 'size', highlight = 'Number' },
                 { 'mtime', highlight = 'Special' },
                 { 'icon' },
             },
@@ -60,8 +61,19 @@ return {
         },
         cmd = { 'Oil' },
         keys = {
-            { '-', '<cmd>Oil<cr>', desc = 'Open Oil' },
+            {
+                'g-',
+                function()
+                    require('oil').open()
+                end,
+                desc = '󰉋 Open Oil',
+            },
         },
+        config = function(_, opts)
+            require('oil').setup(opts)
+            require('oil-lsp-diagnostics').setup({})
+            require('oil-git').setup({})
+        end,
     },
     {
         'nacro90/numb.nvim',
@@ -71,29 +83,66 @@ return {
         },
     },
     {
-        'tiagovla/buffercd.nvim',
-        event = 'VeryLazy',
-        opts = {},
-    },
-    {
         'chrisgrieser/nvim-various-textobjs',
         event = 'VeryLazy',
         opts = {
             keymaps = {
-                useDefaults = true,
-            }
+                useDefaults = false,
+            },
+        },
+        keys = {
+            {
+                'ii',
+                various_textobj('indentation', 'inner', 'inner'),
+                desc = '󰉶 Select inside indentation',
+                mode = { 'o', 'x' },
+            },
+            {
+                'ai',
+                various_textobj('indentation', 'outer', 'inner'),
+                desc = '󰉶 Select around indentation',
+                mode = { 'o', 'x' },
+            },
+            {
+                'aI',
+                various_textobj('indentation', 'outer', 'outer'),
+                desc = '󰉶 Select around indentation with blanks',
+                mode = { 'o', 'x' },
+            },
+            { 'iS', various_textobj('subword', 'inner'), desc = '󰘦 Select inside subword', mode = { 'o', 'x' } },
+            { 'aS', various_textobj('subword', 'outer'), desc = '󰘦 Select around subword', mode = { 'o', 'x' } },
+            { 'ik', various_textobj('key', 'inner'), desc = '󰌋 Select inside key', mode = { 'o', 'x' } },
+            { 'ak', various_textobj('key', 'outer'), desc = '󰌋 Select around key', mode = { 'o', 'x' } },
+            { 'iv', various_textobj('value', 'inner'), desc = '󰎠 Select inside value', mode = { 'o', 'x' } },
+            { 'av', various_textobj('value', 'outer'), desc = '󰎠 Select around value', mode = { 'o', 'x' } },
+            { 'iF', various_textobj('filepath', 'inner'), desc = '󰈔 Select inside filepath', mode = { 'o', 'x' } },
+            { 'aF', various_textobj('filepath', 'outer'), desc = '󰈔 Select around filepath', mode = { 'o', 'x' } },
+            {
+                'im',
+                various_textobj('chainMember', 'inner'),
+                desc = '󰫢 Select inside chain member',
+                mode = { 'o', 'x' },
+            },
+            {
+                'am',
+                various_textobj('chainMember', 'outer'),
+                desc = '󰫢 Select around chain member',
+                mode = { 'o', 'x' },
+            },
         },
     },
     {
         -- TODO: learn
         'kylechui/nvim-surround',
         event = 'VeryLazy',
-        opts = {},
+        opts = {
+            move_cursor = 'sticky',
+        },
         keys = {
-            { 'ir', 'i[', mode = 'o' },
-            { 'ar', 'a[', mode = 'o' },
-            { 'ia', 'i<', mode = 'o' },
-            { 'aa', 'a<', mode = 'o' },
+            { 'ir', 'i[', desc = '󰅪 Select inside square brackets', mode = 'o' },
+            { 'ar', 'a[', desc = '󰅪 Select around square brackets', mode = 'o' },
+            { 'ia', 'i<', desc = '󰅪 Select inside angle brackets', mode = 'o' },
+            { 'aa', 'a<', desc = '󰅪 Select around angle brackets', mode = 'o' },
         },
     },
     {
@@ -101,7 +150,9 @@ return {
         'gbprod/substitute.nvim',
         event = 'VeryLazy',
         opts = {
-            on_substitute = function() require("yanky.integration").substitute() end,
+            on_substitute = function()
+                require('yanky.integration').substitute()
+            end,
         },
         keys = {
             {
@@ -109,18 +160,21 @@ return {
                 function()
                     require('substitute').operator()
                 end,
+                desc = ' Substitute motion with register',
             },
             {
                 'ss',
                 function()
                     require('substitute').line()
                 end,
+                desc = ' Substitute line with register',
             },
             {
                 'S',
                 function()
                     require('substitute').eol()
                 end,
+                desc = ' Substitute to end of line',
             },
             {
                 's',
@@ -128,6 +182,7 @@ return {
                     require('substitute').visual()
                 end,
                 mode = 'x',
+                desc = ' Substitute selection with register',
             },
 
             {
@@ -135,12 +190,14 @@ return {
                 function()
                     require('substitute.exchange').operator()
                 end,
+                desc = '󰓡 Exchange motion with later text',
             },
             {
                 'sxx',
                 function()
                     require('substitute.exchange').line()
                 end,
+                desc = '󰓡 Exchange current line with later line',
             },
             {
                 'X',
@@ -148,12 +205,14 @@ return {
                     require('substitute.exchange').visual()
                 end,
                 mode = 'x',
+                desc = '󰓡 Exchange selection with later text',
             },
             {
                 'sxc',
                 function()
                     require('substitute.exchange').cancel()
                 end,
+                desc = '󰓡 Cancel pending exchange',
             },
 
             {
@@ -161,6 +220,7 @@ return {
                 function()
                     require('substitute.range').operator()
                 end,
+                desc = ' Substitute over explicit range',
             },
             {
                 '<M-s>',
@@ -168,12 +228,14 @@ return {
                     require('substitute.range').visual()
                 end,
                 mode = 'x',
+                desc = ' Substitute selected range',
             },
             {
                 '<M-s>w',
                 function()
                     require('substitute.range').word()
                 end,
+                desc = ' Substitute word over range',
             },
         },
     },
@@ -183,66 +245,12 @@ return {
         opts = {},
     },
     {
-        'jghauser/mkdir.nvim',
-    },
-    {
-        'axkirillov/hbac.nvim',
-        dependencies = {
-            'nvim-telescope/telescope.nvim',
-            'nvim-lua/plenary.nvim',
-            'nvim-tree/nvim-web-devicons',
-        },
-        event = 'VeryLazy',
-        init = function()
-            local actions = require('hbac.telescope.actions')
-            local telescope_actions = require('telescope.actions')
-            require('hbac').setup({
-                threshold = 15,
-                telescope = {
-                    use_default_mappings = false,
-                    mappings = {
-                        n = {
-                            ['<CR>'] = telescope_actions.select_drop,
-                            ['<C-CR>'] = telescope_actions.select_default,
-                            ['c'] = actions.close_unpinned,
-                            ['x'] = actions.delete_buffer,
-                            ['a'] = actions.pin_all,
-                            ['u'] = actions.unpin_all,
-                            ['<Space>'] = actions.toggle_pin,
-                        },
-                        i = {
-                            ['<CR>'] = telescope_actions.select_drop,
-                            ['<C-CR>'] = telescope_actions.select_default,
-                            ['<C-c>'] = actions.close_unpinned,
-                            ['<C-x>'] = actions.delete_buffer,
-                            ['<C-a>'] = actions.pin_all,
-                            ['<C-u>'] = actions.unpin_all,
-                            ['<C-Space>'] = actions.toggle_pin,
-                        },
-                    },
-                },
-            })
-
-            require('telescope').load_extension('hbac')
-        end,
-        keys = {
-            { '<leader>bt',  '<cmd>Telescope hbac buffers<cr>' },
-            { '<leader>bpt', '<cmd>silent! Hbac toggle_pin<cr>' },
-            { '<leader>bpa', '<cmd>Hbac pin_all<cr>' },
-            { '<leader>bpu', '<cmd>Hbac unpin_all<cr>' },
-            { '<leader>bat', '<cmd>Hbac toggle_autoclose<cr>' },
-            { '<leader>bax', '<cmd>Hbac close_unpinned<cr>' },
-        },
-    },
-    {
-        'famiu/bufdelete.nvim',
-        event = 'VeryLazy',
-        cmds = {
-            'Bdelete',
-            'Bwipeout',
-        },
-        keys = {
-            { '<leader>bd', '<cmd>Bdelete<cr>' },
+        'abecodes/tabout.nvim',
+        event = 'InsertCharPre',
+        opts = {
+            tabkey = '',
+            backwards_tabkey = '',
+            completion = false,
         },
     },
 }

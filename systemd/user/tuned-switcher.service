@@ -1,0 +1,8 @@
+[Unit]
+Description=tuned profile switcher
+PartOf=i3-session.target
+
+[Service]
+ExecStart=%h/.local/bin/mise exec tuned-switcher -- tuned-switcher
+Restart=on-failure
+RestartSec=5s

@@ -12,19 +12,11 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-local original_loadfile = loadfile
-_G.loadfile = function(filename, mode, env)
-    --- @diagnostic disable-next-line: need-check-nil
-    return original_loadfile(filename, mode, env)
-end
-
 require('lazy').setup('plugins', {
     ui = {
         border = 'rounded',
+        backdrop = 100,
         title = 'Lazy',
-    },
-    diff = {
-        cmd = 'diffview.nvim',
     },
     checker = {
         enabled = true,

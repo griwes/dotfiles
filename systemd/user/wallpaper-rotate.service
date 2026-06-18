@@ -1,0 +1,8 @@
+[Unit]
+Description=Rotate desktop wallpaper
+PartOf=i3-session.target
+
+[Service]
+ExecStart=%h/dotfiles/scripts/feh-rotate
+Restart=always
+RestartSec=10s

@@ -49,33 +49,41 @@ return {
                 },
             },
         },
+        keys = {
+            {
+                'hdt',
+                function()
+                    require('trouble').toggle('diagnostics')
+                end,
+                desc = '󰒡 Toggle diagnostics tree',
+            },
+        },
     },
     {
         'folke/todo-comments.nvim',
-        lazy = false,
+        event = { 'BufReadPost', 'BufNewFile' },
         opts = {
             highlight = {
-                pattern = [[.*<(KEYWORDS)(\([^\)]*\))?:]],
+                pattern = [[.*<((KEYWORDS)(\(\w+\))?)\s*:]],
             },
             search = {
-                 pattern = [[\b(KEYWORDS)(\([^\)]*\))?:]],
+                pattern = [[\b(KEYWORDS)(?:\(\w+\))?\s*:]],
             },
         },
         keys = {
-            -- TODO: reconfigure these in nap.nvim
             {
                 ']t',
                 function()
                     require('todo-comments').jump_next()
                 end,
-                desc = 'Next todo comment',
+                desc = '󰵚 Next todo comment',
             },
             {
                 '[t',
                 function()
                     require('todo-comments').jump_prev()
                 end,
-                desc = 'Previous todo comment',
+                desc = '󰵚 Previous todo comment',
             },
         },
     },

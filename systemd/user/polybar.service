@@ -1,0 +1,10 @@
+[Unit]
+Description=Polybar
+After=i3-workspace-groups.service
+PartOf=i3-session.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=%h/dotfiles/polybar/reconcile-screens
+ExecReload=%h/dotfiles/polybar/reconcile-screens

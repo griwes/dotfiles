@@ -1,4 +1,4 @@
-zmodule joke/zim-mise
+# zmodule joke/zim-mise
 
 zmodule archive
 zmodule fzf
@@ -18,6 +18,8 @@ zmodule zdharma-continuum/fast-syntax-highlighting
 zmodule goarano/zsh-fzf-packagemanager
 zmodule wintermi/zsh-bob
 zmodule MichaelAquilina/zsh-you-should-use
+zmodule wehlando/efibootmgr-zsh-completion
+zmodule 3v1n0/zsh-bash-completions-fallback
 
 zmodule atuinsh/atuin
 

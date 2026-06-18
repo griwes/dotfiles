@@ -1,0 +1,8 @@
+[Unit]
+Description=NetworkManager applet
+PartOf=i3-session.target
+
+[Service]
+ExecStart=/usr/bin/nm-applet
+Restart=on-failure
+RestartSec=5s

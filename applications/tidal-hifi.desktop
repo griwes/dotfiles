@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=TIDAL Hi-Fi
+GenericName=Music player
+Comment=Desktop client for TIDAL
+Exec=/home/griwes/.local/bin/mise exec github:Mastermindzh/tidal-hifi -- tidal-hifi
+Icon=/home/griwes/dotfiles/applications/icons/tidal-hifi.png
+Terminal=false
+Categories=AudioVideo;Audio;Player;
+StartupWMClass=tidal-hifi

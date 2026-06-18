@@ -1,52 +1,61 @@
+local function vgit(method)
+    return function()
+        require('vgit')[method]()
+    end
+end
+
 return {
     {
-        'lewis6991/gitsigns.nvim',
+        'tanvirtin/vgit.nvim',
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+            'nvim-tree/nvim-web-devicons',
+            'NeogitOrg/neogit',
+        },
         event = 'VeryLazy',
+        -- branch = "develop",
         config = function()
-            local gs = require('gitsigns')
+            local vg = require('vgit')
 
-            gs.setup({
-                numhl = true,
-                signcolumn = true,
-                attach_to_untracked = false,
-                preview_config = {
-                    border = 'rounded',
-                },
-                current_line_blame_opts = {
-                    virt_text_pos = 'right_align',
-                    delay = 100,
+            vg.setup({
+                keymaps = {},
+                settings = {
+                    live_blame = {
+                        enabled = false,
+                    },
                 },
             })
 
-            local wk = require('which-key')
-
-            wk.add({
-                { '<leader>gsb', gs.toggle_current_line_blame, desc = 'Toggle current line blame' },
-                { '<leader>gsB', gs.show,                      desc = 'Show file base' },
-                {
-                    '<leader>gsd',
-                    function()
-                        gs.toggle_deleted(); gs.toggle_linehl(); gs.toggle_word_diff()
-                    end,
-                    desc = 'Toggle diff-like display'
-                },
-                { '<leader>gsD', gs.toggle_deleted,                             desc = 'Toggle display of deleted lines' },
-                { '<leader>gB',  function() gs.blame_line({ full = true }) end, desc = 'Show full line blame' },
-                { '<leader>gd',  '<cmd>DiffviewOpen<cr>',                       desc = 'Open diffview' },
-                { '<leader>hs',  gs.stage_hunk,                                 desc = 'Stage current hunk' },
-                { '<leader>hr',  gs.reset_hunk,                                 desc = 'Reset current hunk' },
-                { '<leader>hu',  gs.undo_stage_hunk,                            desc = 'Undo stage hunk' },
-                { '<leader>hp',  gs.preview_hunk,                               desc = 'Preview current hunk' },
-                { '<leader>hS',  gs.stage_buffer,                               desc = 'Stage the buffer' },
-                { '<leader>hR',  gs.reset_buffer,                               desc = 'Reset the buffer' },
-                { '<leader>hU',  gs.reset_buffer_index,                         desc = 'Unstage the buffer' },
+            require('utils.bracket_nav').map('h', {
+                mode = { 'n', 'x', 'o' },
+                icon = ' ',
+                desc = 'hunk',
+                next = function()
+                    require('vgit').hunk_down()
+                end,
+                prev = function()
+                    require('vgit').hunk_up()
+                end,
             })
-
-            wk.add({
-                { '<leader>hs', function() gs.stage_hunk({ vim.fn.line('.'), vim.fn.line('v') }) end, desc = 'Stage selection', mode = 'v' },
-                { '<leader>hr', function() gs.reset_hunk({ vim.fn.line('.'), vim.fn.line('v') }) end, desc = 'Reset selection', mode = 'v' } });
-
-            vim.keymap.set({ 'o', 'x' }, 'ih', ':<C-U>Gitsigns select_hunk<cr>')
         end,
+        keys = {
+            { 'hgs', vgit('buffer_hunk_stage'), desc = ' Stage hunk' },
+            { 'hgu', vgit('buffer_hunk_reset'), desc = ' Reset hunk' },
+            { 'hgp', vgit('buffer_hunk_preview'), desc = ' Preview hunk' },
+            { 'hgD', vgit('buffer_diff_preview'), desc = ' Preview diff' },
+            { 'hgS', vgit('buffer_stage'), desc = ' Stage buffer' },
+            { 'hgU', vgit('buffer_unstage'), desc = ' Unstage buffer' },
+            { 'hgR', vgit('buffer_reset'), desc = ' Reset buffer' },
+            { 'hgh', vgit('buffer_history_preview'), desc = ' Preview history' },
+            { 'hgP', vgit('project_diff_preview'), desc = ' Preview project diff' }, -- FIXME: this has issues, is it difftastic?
+
+            { 'hgd', vgit('toggle_diff_preference'), desc = ' Switch side-by-side/unified' },
+            { 'hgb', vgit('toggle_live_blame'), desc = ' Toggle blame' },
+            { 'hgt', vgit('toggle_live_gutter'), desc = ' Toggle gutter' },
+
+            { 'hcc', vgit('buffer_conflict_accept_current'), desc = ' Accept current' },
+            { 'hci', vgit('buffer_conflict_accept_incoming'), desc = ' Accept incoming' },
+            { 'hcb', vgit('buffer_conflict_accept_both'), desc = ' Accept both' },
+        },
     },
 }

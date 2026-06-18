@@ -1,54 +1,49 @@
 return {
     {
         'kevinhwang91/nvim-bqf',
-        event = 'VeryLazy',
+        ft = 'qf',
         opts = {
             preview = {
-                winblend = 75,
+                winblend = vim.g.neovide and 100 or 75,
+            },
+            func_map = {
+                prevhist = '',
+                nexthist = '',
             },
         },
-        keys = {
-            { '<leader>co', function()
-                require('edgy.edgebar').stop = true
-                vim.cmd.copen()
-                require('edgy.edgebar').stop = false
-                require('bqf.main').enable()
-            end },
-            { '<leader>cc', '<cmd>cclose<cr>' },
-        }
     },
     {
         'stevearc/quicker.nvim',
-        event = 'VeryLazy',
+        ft = 'qf',
         opts = {
             keys = {
                 {
-                    ">",
+                    '>',
                     function()
-                        require("quicker").expand({ before = 2, after = 2, add_to_existing = true })
+                        require('quicker').expand({ before = 2, after = 2, add_to_existing = true })
                     end,
-                    desc = "Expand quickfix context",
+                    desc = ' Expand quickfix context',
                 },
                 {
-                    "<",
+                    '<',
                     function()
-                        require("quicker").collapse()
+                        require('quicker').collapse()
                     end,
-                    desc = "Collapse quickfix context",
+                    desc = ' Collapse quickfix context',
                 },
             },
             borders = {
                 -- add spaces and extra header characters to add vertical padding around columns
-                vert = " ┃ ",
+                vert = ' ┃ ',
                 -- strong headers separate results from different files
-                strong_header = "━",
-                strong_cross = "━╋━",
-                strong_end = "┫",
+                strong_header = '━',
+                strong_cross = '━╋━',
+                strong_end = '┫',
                 -- soft headers separate results within the same file
-                soft_header = "╌",
-                soft_cross = "╌╂╌",
-                soft_end = "┨",
+                soft_header = '╌',
+                soft_cross = '╌╂╌',
+                soft_end = '┨',
             },
         },
-    }
+    },
 }

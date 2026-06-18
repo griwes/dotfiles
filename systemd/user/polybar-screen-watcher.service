@@ -1,0 +1,10 @@
+[Unit]
+Description=Reconcile Polybar when XRandR screen layout changes
+Wants=polybar.service
+After=polybar.service
+PartOf=i3-session.target
+
+[Service]
+ExecStart=/usr/bin/bash %h/dotfiles/polybar/watch-screens
+Restart=always
+RestartSec=5s

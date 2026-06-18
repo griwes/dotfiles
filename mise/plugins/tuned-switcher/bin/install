@@ -1,0 +1,75 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+fail() {
+    printf 'tuned-switcher mise plugin: %s\n' "$*" >&2
+    exit 1
+}
+
+need() {
+    command -v "$1" >/dev/null 2>&1 || fail "missing required command: $1"
+}
+
+need git
+need cmake
+
+version="${ASDF_INSTALL_VERSION:?ASDF_INSTALL_VERSION is required}"
+install_path="${ASDF_INSTALL_PATH:?ASDF_INSTALL_PATH is required}"
+tag="$version"
+
+if [[ "$tag" != v* ]]; then
+    tag="v$tag"
+fi
+
+build_root="$(mktemp -d "${TMPDIR:-/tmp}/mise-tuned-switcher.XXXXXXXXXX")"
+source_dir="$build_root/source"
+build_dir="$build_root/build"
+preflight_log="$build_root/cmake-preflight.log"
+
+cleanup() {
+    rm -rf "$build_root"
+}
+
+trap cleanup EXIT
+
+git clone \
+    --depth=1 \
+    --branch="$tag" \
+    https://github.com/xvitaly/tuned-switcher.git \
+    "$source_dir"
+
+if ! cmake \
+    -S "$source_dir" \
+    -B "$build_dir" \
+    -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE:-RelWithDebInfo}" \
+    -DCMAKE_INSTALL_PREFIX="$install_path" \
+    -DCMAKE_FIND_DEBUG_MODE=OFF \
+    >"$preflight_log" 2>&1; then
+    if grep -q 'Qt6Svg' "$preflight_log"; then
+        cat "$preflight_log" >&2
+        fail 'missing Qt6 SVG development files; on Debian-like systems install libqt6svg6-dev'
+    fi
+
+    cat "$preflight_log" >&2
+    fail 'CMake configure preflight failed'
+fi
+
+rm -rf "$build_dir"
+
+cmake_args=(
+    -S "$source_dir"
+    -B "$build_dir"
+    -DCMAKE_BUILD_TYPE="${CMAKE_BUILD_TYPE:-RelWithDebInfo}"
+    -DCMAKE_INSTALL_PREFIX="$install_path"
+)
+
+if command -v ninja >/dev/null 2>&1; then
+    cmake_args+=(-G Ninja)
+fi
+
+cmake "${cmake_args[@]}"
+cmake --build "$build_dir" --parallel "${MISE_JOBS:-$(nproc 2>/dev/null || printf '1')}"
+cmake --install "$build_dir"
+
+test -x "$install_path/bin/tuned-switcher" ||
+    fail "install completed without creating bin/tuned-switcher"

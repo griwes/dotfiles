@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+monitor="${1:?monitor name required}"
+export MONITOR="${monitor}"
+
+pids=()
+
+terminate() {
+    trap - INT TERM EXIT
+
+    if ((${#pids[@]} > 0)); then
+        kill "${pids[@]}" 2>/dev/null || true
+        wait "${pids[@]}" 2>/dev/null || true
+    fi
+}
+
+trap terminate INT TERM EXIT
+
+polybar --reload top &
+pids+=("$!")
+
+polybar --reload bottom &
+pids+=("$!")
+
+set +e
+wait -n "${pids[@]}"
+status="$?"
+set -e
+
+terminate
+exit "${status}"

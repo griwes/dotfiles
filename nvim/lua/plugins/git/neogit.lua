@@ -1,20 +1,8 @@
 return {
     {
-        'SuperBo/fugit2.nvim',
-        lazy = false,
-        opts = {
-            libgit2_path = '/usr/lib/x86_64-linux-gnu/libgit2.so',
-        },
-        keys = {
-            { '<leader>gf', '<cmd>Fugit2<cr>' },
-        },
-    },
-    {
         'NeogitOrg/neogit',
         dependencies = {
             'nvim-lua/plenary.nvim',
-            'nvim-telescope/telescope.nvim',
-            'sindrets/diffview.nvim',
         },
         opts = function()
             -- monkey-patch, because these are not configurable...
@@ -32,15 +20,7 @@ return {
             return {
                 disable_hint = false,
                 disable_context_highlighting = true,
-                graph_style = 'unicode',
-                telescope_sorter = function()
-                    return require('telescope').extensions.fzf.native_fzf_sorter()
-                end,
-                integrations = {
-                    telescope = true,
-                    diffview = true,
-                    fzf_lua = false,
-                },
+                graph_style = 'kitty',
                 mappings = {
                     commit_editor = {
                         ['q'] = 'Close',
@@ -141,14 +121,20 @@ return {
                         ['<C-l>'] = 'PeekUp',
                         ['<C-k>'] = 'PeekDown',
                     },
-                }
+                },
             }
         end,
-        cmds = {
+        cmd = {
             'Neogit',
         },
         keys = {
-            { '<leader>gg', '<cmd>Neogit<cr>', 'Open Neogit' },
-        }
-    }
+            {
+                'hgg',
+                function()
+                    require('neogit').open()
+                end,
+                desc = ' Open Neogit',
+            },
+        },
+    },
 }

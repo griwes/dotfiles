@@ -1,50 +1,29 @@
 return {
     {
-        'nyngwang/NeoZoom.lua',
-        opts = {
-            popup = {
-                enabled = true,
-            },
-            winopts = {
-                offset = {
-                    width = 200,
-                    height = 0.9
-                },
-                border = 'rounded'
-            },
-            callbacks = {
-                function()
-                    vim.cmd([[
-                        hi NeoZoomFloatBg guibg=None
-                        set winhl=Normal:NeoZoomFloatBg
-                    ]])
-                end,
-            },
-        },
-        cmd = 'NeoZoomToggle',
-        keys = {
-            { '<leader>zz', '<cmd>NeoZoomToggle<cr>', desc = 'Toggle zoom on current buffer' },
-        }
-    },
-    {
-        'folke/twilight.nvim',
-        opts = {
-            dimming = {
-                inactive = true,
-            },
-        },
-        cmds = {
-            'Twilight',
-            'TwilightEnable',
-            'TwilightDisable',
-        },
-        keys = {
-            { '<leader>zf', '<cmd>Twilight<cr>', desc = 'Toggle highlight of only nearby code' },
-        }
-    },
-    {
         'nvim-zh/colorful-winsep.nvim',
-        event = 'WinNew',
-        config = true,
+        event = 'WinLeave',
+        opts = {
+            border = 'rounded',
+            animate = {
+                enabled = 'progressive',
+                progressive = {
+                    vertical_delay = 10,
+                    horizontal_delay = 1,
+                },
+            },
+            indicator_for_2wins = {
+                position = 'both',
+                symbols = {
+                    start_left = '>',
+                    end_left = '>',
+                    start_down = 'ʌ',
+                    end_down = 'ʌ',
+                    start_up = 'v',
+                    end_up = 'v',
+                    start_right = '<',
+                    end_right = '<',
+                },
+            },
+        },
     },
 }

@@ -1,0 +1,8 @@
+[Unit]
+Description=Picom compositor
+PartOf=i3-session.target
+
+[Service]
+ExecStart=/usr/bin/picom --config %h/.config/i3/picom.conf
+Restart=on-failure
+RestartSec=5s

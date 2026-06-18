@@ -7,20 +7,32 @@ edging = "subpixelantialias"
 family = "Iosevka Nerd Font"
 style = "Light"
 
+[[font.normal]]
+family = "Flog Symbols"
+
 [[font.bold]]
 family = "Iosevka Nerd Font"
 style = "SemiBold"
+
+[[font.bold]]
+family = "Flog Symbols"
 
 [[font.italic]]
 family = "Iosevka Nerd Font"
 style = "Light Oblique"
 
+[[font.italic]]
+family = "Flog Symbols"
+
 [[font.bold_italic]]
 family = "Iosevka Nerd Font"
 style = "SemiBold Oblique"
+
+[[font.bold_italic]]
+family = "Flog Symbols"
 
 [font.features]
 "Iosevka Nerd Font" = ["+calt", "cv73=3", "cv74=6", "cv76=2", "VXAG=2", "VSAB=3", "VSAI=2", "VSAL=5", "VSAO=3", "VSAP=2", "VLAA=2", "VLAC=2", "VLAD=2", "VLAE=2", "VLAF=2", "VLAG=2", "+CLIK", "+HSKL"]
 
 [box-drawing]
-mode = "font-glyph"
+mode = "native"

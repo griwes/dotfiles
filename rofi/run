@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mise_bin="${MISE_BIN:-${HOME}/.local/bin/mise}"
+mise_data="${MISE_DATA_DIR:-${HOME}/.local/share/mise}"
+script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
+dotfiles_dir="$(cd -- "${script_dir}/.." && pwd -P)"
+xdg_data_dirs="${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+
+prepend_xdg_data_dir() {
+    local dir="$1"
+
+    [[ -d "${dir}/applications" ]] || return 0
+
+    case ":${xdg_data_dirs}:" in
+        *":${dir}:"*) ;;
+        *) xdg_data_dirs="${dir}:${xdg_data_dirs}" ;;
+    esac
+}
+
+prepend_xdg_data_dir "${dotfiles_dir}"
+
+if [[ -d "${mise_data}/installs" ]]; then
+    while IFS= read -r applications_dir
+    do
+        prepend_xdg_data_dir "${applications_dir%/applications}"
+    done < <(
+        find "${mise_data}/installs" \
+            -mindepth 4 \
+            -maxdepth 7 \
+            -type d \
+            -path '*/share/applications' \
+            -print 2>/dev/null |
+            sort -u
+    )
+fi
+
+export XDG_DATA_DIRS="${xdg_data_dirs}"
+
+if [[ -x "${mise_bin}" ]]; then
+    exec "${mise_bin}" exec -- rofi "$@"
+fi
+
+exec rofi "$@"

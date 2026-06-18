@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+pending_lock="${XDG_RUNTIME_DIR:-/tmp}/polybar-randr-reconcile-pending.lock"
+declare -a pending_pids=()
+
+reconcile_polybar() {
+    systemctl --user reload-or-restart polybar.service || true
+}
+
+cleanup() {
+    trap - INT TERM EXIT
+
+    if ((${#pending_pids[@]} > 0)); then
+        kill "${pending_pids[@]}" 2>/dev/null || true
+        wait "${pending_pids[@]}" 2>/dev/null || true
+    fi
+
+    if [[ -n "${xev_pid:-}" ]]; then
+        kill "${xev_pid}" 2>/dev/null || true
+        wait "${xev_pid}" 2>/dev/null || true
+    fi
+
+    rmdir "${pending_lock}" 2>/dev/null || true
+}
+
+schedule_reconcile() {
+    if ! mkdir "${pending_lock}" 2>/dev/null; then
+        return
+    fi
+
+    (
+        sleep 1
+        reconcile_polybar
+        rmdir "${pending_lock}" 2>/dev/null || true
+    ) &
+    pending_pids+=("$!")
+}
+
+coproc RANDR_EVENTS { xev -root -event randr; }
+xev_pid="${RANDR_EVENTS_PID}"
+
+trap cleanup INT TERM EXIT
+
+# Subscribe to RandR first, then reconcile the already-visible monitors.  Any
+# RandR event that fires during this initial reconciliation remains buffered on
+# xev's pipe and schedules a second pass below, so startup cannot miss a layout
+# transition that happens between "initial state" and "watching for changes".
+reconcile_polybar
+
+while IFS= read -r line <&"${RANDR_EVENTS[0]}"; do
+    case "${line}" in
+        *RRScreenChangeNotify* | *RRNotify*)
+            schedule_reconcile
+            ;;
+    esac
+done

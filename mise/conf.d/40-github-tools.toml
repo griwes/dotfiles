@@ -1,0 +1,12 @@
+[tools]
+"github:chmouel/lazyworktree" = "latest"
+"github:devnullvoid/pvetui" = "latest"
+"github:Harry-kp/vortix" = "latest"
+"github:kovidgoyal/kitty" = "latest"
+"github:Mastermindzh/tidal-hifi" = "latest"
+"github:neovide/neovide" = "nightly"
+"github:openai/codex" = { version = "latest", asset_pattern = "codex-x86_64-unknown-linux-musl.zst" }
+"github:ramonvermeulen/whosthere" = "latest"
+"github:shazow/wifitui" = "latest"
+"github:vencord/vesktop" = { version = "latest", asset_pattern = "vesktop-?.?.?.tar.gz" }
+"github:Wilfred/difftastic" = "latest"

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+lock="${XDG_RUNTIME_DIR:-/tmp}/polybar-reconcile-screens.lock"
+
+exec 9>"${lock}"
+flock 9
+
+declare -A desired_units=()
+
+while IFS=: read -r monitor _; do
+    if [[ -z "${monitor}" ]]; then
+        continue
+    fi
+
+    unit="$(systemd-escape --template=polybar@.service "${monitor}")"
+    desired_units["${unit}"]=1
+    systemctl --user start "${unit}"
+done < <(polybar --list-monitors)
+
+while read -r unit _; do
+    if [[ -z "${unit}" ]]; then
+        continue
+    fi
+
+    if [[ -n "${desired_units[${unit}]+x}" ]]; then
+        continue
+    fi
+
+    systemctl --user stop "${unit}" || true
+done < <(systemctl --user list-units 'polybar@*.service' --all --no-legend --plain)

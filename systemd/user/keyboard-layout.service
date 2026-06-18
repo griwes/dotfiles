@@ -1,0 +1,8 @@
+[Unit]
+Description=Keyboard layout for i3 session
+PartOf=i3-session.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/bash -lc 'setxkbmap -layout pl,ru -variant ",phonetic_winkeys"; setxkbmap -option "" -option "grp:alt_space_toggle,compose:prsc,shift:breaks_caps"'

@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+git ls-remote --tags --refs https://github.com/xvitaly/tuned-switcher.git 'refs/tags/v*' |
+    sed -E 's#.*refs/tags/v?##' |
+    sort -V

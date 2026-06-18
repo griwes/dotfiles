@@ -1,19 +1,33 @@
 ZIM_HOME=~/.local/share/zim
 
+has() {
+  command -v "$1" >/dev/null 2>&1
+}
+
 if [[ ! -e ${ZIM_HOME}/zimfw.zsh ]]; then
-  curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh \
-      https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+  if has curl; then
+    curl -fsSL --create-dirs -o ${ZIM_HOME}/zimfw.zsh \
+        https://github.com/zimfw/zimfw/releases/latest/download/zimfw.zsh
+  else
+    print -ru2 'zimfw.zsh is missing and curl is unavailable; skipping Zim bootstrap.'
+  fi
 fi
 
-if [[ ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
+if [[ -r ${ZIM_HOME}/zimfw.zsh && ! ${ZIM_HOME}/init.zsh -nt ${ZDOTDIR:-${HOME}}/.zimrc ]]; then
   source ${ZIM_HOME}/zimfw.zsh init -q
 fi
 
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.local/share/mise/shims:$PATH"
 export YSU_MESSAGE_POSITION="after"
 export YSU_MODE=ALL
 
-source ${ZIM_HOME}/init.zsh
+if [[ -r ${ZIM_HOME}/init.zsh ]]; then
+  source ${ZIM_HOME}/init.zsh
+fi
+
+if [[ -r ~/.ssh/creds ]]; then
+  source ~/.ssh/creds
+fi
 
 zstyle ':completion:*' format '[%d]'
 
@@ -31,12 +45,16 @@ FZF_GROUP_COLORS=(
 )
 zstyle ':fzf-tab:*' group-colors $FZF_GROUP_COLORS
 
-alias ls='lsd --group-directories-first'
-alias ll='lsd -l --group-directories-first'
-alias la='lsd -la --group-directories-first'
-alias tree='lsd -l --group-directories-first --tree --depth=2'
+if has lsd; then
+  alias ls='lsd --group-directories-first'
+  alias ll='lsd -l --group-directories-first'
+  alias la='lsd -la --group-directories-first'
+  alias tree='lsd -l --group-directories-first --tree --depth=2'
+fi
 
-alias cd='z'
+if has zoxide; then
+  alias cd='z'
+fi
 
 typeset -g -A key
 

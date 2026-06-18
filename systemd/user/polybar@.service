@@ -1,0 +1,8 @@
+[Unit]
+Description=Polybar on %I
+PartOf=polybar.service i3-session.target
+
+[Service]
+ExecStart=%h/dotfiles/polybar/run-monitor %I
+Restart=on-failure
+RestartSec=2s

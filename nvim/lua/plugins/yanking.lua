@@ -1,16 +1,39 @@
+local function is_visual()
+    return vim.fn.mode():sub(1, 1) ~= 'n'
+end
+
+local function yank()
+    return require('yanky').yank()
+end
+
+local function put(kind, wrapper)
+    return function()
+        require('yanky').put(kind, is_visual(), wrapper and wrapper())
+    end
+end
+
+local function cycle(direction)
+    return function()
+        require('yanky').cycle(direction)
+    end
+end
+
+local function linewise()
+    return require('yanky.wrappers').linewise()
+end
+
+local function linewise_change(change)
+    return function()
+        local wrappers = require('yanky.wrappers')
+        return wrappers.linewise(wrappers.change(change))
+    end
+end
+
 return {
-    {
-        'EtiamNullam/deferred-clipboard.nvim',
-        event = 'VeryLazy',
-        opts = {
-            fallback = 'unnamedplus',
-            lazy = true,
-        },
-    },
     {
         'gbprod/yanky.nvim',
         dependencies = {
-            'kkharji/sqlite.lua'
+            'kkharji/sqlite.lua',
         },
         event = 'VeryLazy',
         opts = {
@@ -23,66 +46,64 @@ return {
             },
         },
         keys = {
-            {
-                '<leader>p',
-                function()
-                    require('telescope').extensions.yank_history.yank_history({})
-                end,
-                desc = 'Open Yank History'
-            },
-
+            -- TODO: history picker
             {
                 'y',
-                '<Plug>(YankyYank)',
+                yank,
                 mode = { 'n', 'x' },
-                desc = 'Yank text'
+                expr = true,
+                desc = ' Yank text',
             },
             {
                 'p',
-                '<Plug>(YankyPutAfter)',
+                put('p'),
                 mode = { 'n', 'x' },
-                desc = 'Put yanked text after cursor'
+                desc = ' Put yanked text after cursor',
             },
             {
                 'P',
-                '<Plug>(YankyPutBefore)',
+                put('P'),
                 mode = { 'n', 'x' },
-                desc = 'Put yanked text before cursor'
+                desc = ' Put yanked text before cursor',
             },
             {
                 'gp',
-                '<Plug>(YankyGPutAfter)',
+                put('gp'),
                 mode = { 'n', 'x' },
-                desc = 'Put yanked text after selection'
+                desc = ' Put yanked text after selection',
             },
             {
                 'gP',
-                '<Plug>(YankyGPutBefore)',
+                put('gP'),
                 mode = { 'n', 'x' },
-                desc = 'Put yanked text before selection'
+                desc = ' Put yanked text before selection',
             },
 
-            { '<C-M-p>', '<Plug>(YankyPreviousEntry)',             desc = 'Select previous entry through yank history' },
-            { '<C-M-n>', '<Plug>(YankyNextEntry)',                 desc = 'Select next entry through yank history' },
-            { ']p',      '<Plug>(YankyPutIndentAfterLinewise)',    desc = 'Put indented after cursor (linewise)' },
-            { '[p',      '<Plug>(YankyPutIndentBeforeLinewise)',   desc = 'Put indented before cursor (linewise)' },
-            { ']P',      '<Plug>(YankyPutIndentAfterLinewise)',    desc = 'Put indented after cursor (linewise)' },
-            { '[P',      '<Plug>(YankyPutIndentBeforeLinewise)',   desc = 'Put indented before cursor (linewise)' },
-            { '>p',      '<Plug>(YankyPutIndentAfterShiftRight)',  desc = 'Put and indent right' },
-            { '<p',      '<Plug>(YankyPutIndentAfterShiftLeft)',   desc = 'Put and indent left' },
-            { '>P',      '<Plug>(YankyPutIndentBeforeShiftRight)', desc = 'Put before and indent right' },
-            { '<P',      '<Plug>(YankyPutIndentBeforeShiftLeft)',  desc = 'Put before and indent left' },
-            { '=p',      '<Plug>(YankyPutAfterFilter)',            desc = 'Put after applying a filter' },
-            { '=P',      '<Plug>(YankyPutBeforeFilter)',           desc = 'Put before applying a filter' },
+            {
+                '<C-M-p>',
+                cycle(1),
+                desc = ' Select previous entry through yank history',
+            },
+            { '<C-M-n>', cycle(-1), desc = ' Select next entry through yank history' },
+            { ']p', put(']p', linewise), desc = ' Put indented after cursor (linewise)' },
+            { '[p', put('[p', linewise), desc = ' Put indented before cursor (linewise)' },
+            { ']P', put(']p', linewise), desc = ' Put indented after cursor (linewise)' },
+            { '[P', put('[p', linewise), desc = ' Put indented before cursor (linewise)' },
+            { '>p', put('p', linewise_change('>>')), desc = ' Put and indent right' },
+            { '<p', put('p', linewise_change('<<')), desc = ' Put and indent left' },
+            { '>P', put('P', linewise_change('>>')), desc = ' Put before and indent right' },
+            { '<P', put('P', linewise_change('<<')), desc = ' Put before and indent left' },
+            { '=p', put('p', linewise_change('==')), desc = ' Put after applying a filter' },
+            { '=P', put('P', linewise_change('==')), desc = ' Put before applying a filter' },
 
             {
-                ',lp',
+                'ylp',
                 function()
                     require('yanky.textobj').last_put()
                 end,
                 mode = { 'o', 'x' },
-                desc = 'Last put',
-            }
+                desc = ' Last put',
+            },
         },
     },
 }

@@ -1,13 +1,8 @@
 #!/usr/bin/env bash
 
-# TODO:
-# 1. rustup
-# 2. cargo install bob
-# 3. bob install and use a known neovim version
+set -euo pipefail
 
-set -e
-
-if [[ "${USER}" != "griwes" && "${USER}" != "mdominiak" && "${GRIWES_DOTFILES_DISREGARD_USERNAME}" -ne 1 ]]
+if [[ "${USER}" != "griwes" && "${USER}" != "mdominiak" && "${GRIWES_DOTFILES_DISREGARD_USERNAME:-0}" -ne 1 ]]
 then
     echo "You are (probably) not griwes."
     echo "Please take some time reading through this script to avoid surprises."
@@ -15,70 +10,54 @@ then
     exit 1
 fi
 
-do_which() {
-    if ! which $1 >/dev/null
-    then
-        echo "$1 not installed! Make sure you have: nvim, pip3, git, tmux, zsh."
-        exit 1
-    fi
-}
-
-do_which nvim
-do_which pip3
-do_which git
-do_which tmux
-do_which zsh
-
-dot_dir=$(dirname $(readlink -f $BASH_SOURCE[0]))
+dot_dir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
 
 set -x
 
-echo Configuring git...
-ln -sfn "${dot_dir}/git/config" ~/.gitconfig
+echo Downloading mise and installing tools...
+curl -fsSL https://mise.run | zsh
 
-echo Configuring i3...
-if [[ -d ~/.config/i3 ]]
+mkdir -p "${HOME}/.config" "${HOME}/.ssh/cm_sockets"
+ln -sfn "${dot_dir}/mise" "${HOME}/.config/mise"
+"${HOME}/.local/bin/mise" install
+
+simple_configs=(
+    atuin
+    dunst
+    i3
+    kitty
+    mise
+    neovide
+    nvim
+    polybar
+    rofi
+    systemd
+)
+
+declare -A special_configs=(
+    [git/config]="${HOME}/.gitconfig"
+    [ssh/config]="${HOME}/.ssh/config"
+    [starship/starship.toml]="${HOME}/.config/starship.toml"
+    [topgrade/topgrade.toml]="${HOME}/.config/topgrade.toml"
+    [zsh/zimrc]="${HOME}/.zimrc"
+    [zsh/zshrc]="${HOME}/.zshrc"
+)
+
+for config in "${simple_configs[@]}"
+do
+    ln -sfn "${dot_dir}/${config}" "${HOME}/.config/${config}"
+done
+
+for key in "${!special_configs[@]}"
+do
+    ln -sfn "${dot_dir}/${key}" "${special_configs[${key}]}"
+done
+
+zsh_path="$(command -v zsh)"
+current_shell="$(getent passwd "${USER}" | awk -F':' '{ print $7 }')"
+if [[ "${current_shell}" != "${zsh_path}" ]]
 then
-    rm -rf ~/.config/i3
-fi
-ln -sfn "${dot_dir}/i3" ~/.config/i3
-
-pipx install i3-workspace-groups
-
-echo Configuring polybar...
-ln -sfn "${dot_dir}/polybar" ~/.config/polybar
-
-echo Configuring nvim...
-ln -sfn "${dot_dir}/nvim" ~/.config/nvim
-
-echo Configuring ssh...
-ln -sfn "${dot_dir}/ssh/config" ~/.ssh/config
-mkdir -p ~/.ssh/cm_sockets
-
-echo Configuring kitty...
-ln -sfn "${dot_dir}/kitty" ~/.config/kitty
-
-echo Configuring tmux...
-ln -sfn "${dot_dir}/tmux/tmux.conf" ~/.tmux.conf
-ln -sfn "${dot_dir}/tmux" ~/.tmux
-cd "${dot_dir}/tmux"
-make tmux.conf
-cd - >/dev/null
-
-echo Configuring zsh...
-ln -sfn "${dot_dir}/zsh/zshrc" ~/.zshrc
-ln -sfn "${dot_dir}/zsh/p10k.zsh" ~/.p10k.zsh
-if [ "$(cat /etc/passwd | grep ${USER} | awk -F':' '{ print $7 }')" != "$(which zsh)" ]
-then
-    chsh -s $(which zsh)
-fi
-
-echo Installing fzf...
-if [ ! -d ~/.fzf ]
-then
-    git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
-    ~/.fzf/install
+    chsh -s "${zsh_path}"
 fi
 
 echo Setup complete.
-

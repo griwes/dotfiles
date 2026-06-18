@@ -2,43 +2,69 @@
     name = Michał 'Griwes' Dominiak
     email = griwes@griwes.info
 
-[alias]
-    ri = rebase -i --autosquash
-    mri = rebase -i
-    fix = commit --fixup
-    squ = commit --squash
-    d = difftool
+[init]
+    defaultBranch = main
 
-[gpg]
-	format = ssh
-[gpg "ssh"]
-	allowedSignersFile = /home/griwes/.ssh/allowed_signers
-    defaultKeyCommand = bash -c 'ssh-add -L | xargs -I{} echo "key::{}"'
+[alias]
+    d = difftool
+    fix = commit --fixup
+    mri = rebase -i
+    ri = rebase -i --autosquash
+    squ = commit --squash
+    wtb = "!f() { git worktree add -b \"$1\" \"$1\" \"$2\"; }; f"
+    wtc = "!f() { git worktree add \"$1\" \"$1\"; }; f"
+
 [commit]
-	gpgsign = true
+    gpgsign = true
+
 [tag]
     gpgsign = true
 
-[difftool "difftastic"]
-    # See `man git-difftool` for a description of MERGED, LOCAL and REMOTE.
-    cmd = difft "$MERGED" "$LOCAL" "abcdef1" "100644" "$REMOTE" "abcdef2" "100644"
-[difftool]
-    prompt = false
-[pager]
-    difftool = true
+[gpg]
+    format = ssh
+
+[gpg "ssh"]
+    allowedSignersFile = /home/griwes/.ssh/allowed_signers
+    defaultKeyCommand = bash -c 'ssh-add -L | xargs -I{} echo "key::{}"'
+
+[credential "https://github.com"]
+    helper =
+    helper = !/usr/bin/gh auth git-credential
+
+[credential "https://gist.github.com"]
+    helper =
+    helper = !/usr/bin/gh auth git-credential
+
 [diff]
     external = difft
     tool = difftastic
 
+[difftool]
+    prompt = false
+
+[difftool "difftastic"]
+    # See `man git-difftool` for a description of MERGED, LOCAL and REMOTE.
+    cmd = difft "$MERGED" "$LOCAL" "abcdef1" "100644" "$REMOTE" "abcdef2" "100644"
+
+[merge]
+    tool = codediff
+
+[mergetool "codediff"]
+    cmd = nvim "$MERGED" -c "CodeDiff merge \"$MERGED\""
+
+[pager]
+    difftool = true
+
+[fetch]
+    writeCommitGraph = true
+
+[pull]
+    ff = only
+
 [push]
     default = simple
-[pull]
-	ff = only
-[init]
-	defaultBranch = main
+
 [rerere]
-	enabled = true
-[fetch]
-	writeCommitGraph = true
+    enabled = true
 
 # vim: ft=gitconfig

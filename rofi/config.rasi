@@ -1,4 +1,4 @@
-@theme "/home/griwes/.local/share/rofi/themes/rounded-gray-dark.rasi"
+@theme "themes/dotfiles"
 
 * {
     font: "Iosevka Nerd Font Light 16";

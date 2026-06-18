@@ -1,9 +1,11 @@
 set $mod Mod4
+set $i3_config ~/.config/i3
+set $rofi /home/griwes/.config/rofi/run
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
 # font pango:DejaVu Sans Mono, FontAwesome 16
-font pango:Iosevka Nerd Font, 11
+font pango:Iosevka Nerd Font, 12
 
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
@@ -15,8 +17,8 @@ bindsym $mod+Return exec kitty
 bindsym $mod+Shift+q kill
 
 # start rofi
-bindsym $mod+d exec "rofi -show-icons -modi window,drun,run -show drun -matching fuzzy -sort"
-bindsym $mod+Shift+d exec "rofi -font -show-icons -modi window,drun,run -show window -matching fuzzy -sort"
+bindsym $mod+d exec --no-startup-id "$rofi -show-icons -modi window,drun,run -show drun -matching fuzzy -sort"
+bindsym $mod+Shift+d exec --no-startup-id "$rofi -show-icons -modi window,drun,run -show window -matching fuzzy -sort"
 
 # change focus
 bindsym $mod+j focus left
@@ -51,22 +53,22 @@ bindsym $mod+Shift+space floating toggle
 bindsym $mod+space focus mode_toggle
 
 # i3-workspace-groups
-set $exec_i3_groups exec --no-startup-id ~/.local/bin/mise exec i3-workspace-groups -- i3-workspace-groups
+set $exec_i3_groups exec --no-startup-id ~/.local/bin/mise exec pipx:i3-workspace-groups -- i3-workspace-groups
 
 # Switch active workspace group
-bindsym $mod+g exec --no-startup-id ~/.local/bin/mise exec i3-workspace-groups -- i3-switch-active-workspace-group
+bindsym $mod+g exec --no-startup-id ~/.local/bin/mise exec pipx:i3-workspace-groups -- i3-switch-active-workspace-group
 
 # Assign workspace to a group
-bindsym $mod+Shift+g exec --no-startup-id ~/.local/bin/mise exec i3-workspace-groups -- i3-assign-workspace-to-group
+bindsym $mod+Shift+g exec --no-startup-id ~/.local/bin/mise exec pipx:i3-workspace-groups -- i3-assign-workspace-to-group
 
 # Select workspace to focus on
-bindsym $mod+w exec --no-startup-id ~/.local/bin/mise exec i3-workspace-groups -- i3-focus-on-workspace
+bindsym $mod+w exec --no-startup-id ~/.local/bin/mise exec pipx:i3-workspace-groups -- i3-focus-on-workspace
 
 # Move the focused container to another workspace
-bindsym $mod+Shift+w exec --no-startup-id ~/.local/bin/mise exec i3-workspace-groups -- i3-move-to-workspace
+bindsym $mod+Shift+w exec --no-startup-id ~/.local/bin/mise exec pipx:i3-workspace-groups -- i3-move-to-workspace
 
 # Rename/renumber workspace. Uses Super+Alt+n
-bindsym Mod1+Mod4+n exec --no-startup-id ~/.local/bin/mise exec i3-workspace-groups -- i3-rename-workspace
+bindsym Mod1+Mod4+n exec --no-startup-id ~/.local/bin/mise exec pipx:i3-workspace-groups -- i3-rename-workspace
 
 # switch to workspace
 bindsym $mod+1 $exec_i3_groups workspace-number 1
@@ -129,28 +131,20 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
-# Keyboard layout
-exec_always --no-startup-id setxkbmap -layout pl,ru -variant ',phonetic_winkeys'
-exec_always --no-startup-id setxkbmap -option '' -option 'grp:alt_space_toggle,compose:prsc,shift:breaks_caps'
-
-# autostart
-exec --no-startup-id ~/dotfiles/scripts/feh-rotate
-exec --no-startup-id picom -b --config ~/.config/i3/compton.conf --backend glx
-# exec --no-startup-id redshift -l37:-121
-# exec --no-startup-id ~/dotfiles/audio/start-combined-sink
-exec --no-startup-id nm-applet
+# session services
+exec_always --no-startup-id sh -lc 'systemctl --user import-environment DISPLAY XAUTHORITY XDG_CURRENT_DESKTOP DESKTOP_SESSION XDG_SESSION_TYPE; systemctl --user restart i3-session.target'
 
 # bind volume control
-bindsym XF86AudioRaiseVolume exec amixer set Master -q 5%+ & exec ~/.config/i3/scripts/volume-notify
-bindsym XF86AudioLowerVolume exec amixer set Master -q 5%- & exec ~/.config/i3/scripts/volume-notify
-bindsym XF86AudioMute exec amixer set Master toggle & exec ~/.config/i3/scripts/volume-notify
+bindsym XF86AudioRaiseVolume exec amixer set Master -q 5%+ & exec $i3_config/scripts/volume-notify
+bindsym XF86AudioLowerVolume exec amixer set Master -q 5%- & exec $i3_config/scripts/volume-notify
+bindsym XF86AudioMute exec amixer set Master toggle & exec $i3_config/scripts/volume-notify
 
 # bind brightness control
-bindsym XF86MonBrightnessUp exec brightnessctl set +5% & exec ~/.config/i3/scripts/brightness-notify
-bindsym XF86MonBrightnessDown exec brightnessctl set 5%- & exec ~/.config/i3/scripts/brightness-notify
+bindsym XF86MonBrightnessUp exec brightnessctl set +5% & exec $i3_config/scripts/brightness-notify
+bindsym XF86MonBrightnessDown exec brightnessctl set 5%- & exec $i3_config/scripts/brightness-notify
 
 # i3lock with wallpaper images
-bindsym $mod+Control+l exec ~/lock-poc
+bindsym $mod+Control+l exec --no-startup-id sh -lc 'if command -v lock-poc >/dev/null 2>&1; then exec lock-poc; elif [ -x "$HOME/lock-poc" ]; then exec "$HOME/lock-poc"; fi'
 
 # move current workspace to another display
 bindsym $mod+Control+Shift+j move workspace to output left
@@ -166,6 +160,7 @@ hide_edge_borders smart
 # disable the border for terminal
 for_window [class="(?i)kitty"] border pixel 1
 for_window [class="(?i)x-terminal-emulator"] border pixel 1
+for_window [class="(?i)neovide"] border pixel 1
 
 #for_window [class=".*"] title_format "<span size='smaller'>%title</span>"
 for_window [class=".*"] title_window_icon yes

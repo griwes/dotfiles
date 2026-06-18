@@ -33,7 +33,19 @@ return {
         },
     },
     keys = {
-        { '<leader>ovr', '<cmd>OverseerRun<cr>' },
-        { '<leader>ovt', '<cmd>OverseerToggle<cr>' },
-    }
+        {
+            'hOr',
+            function()
+                require('overseer').run_task({})
+            end,
+            desc = '󰐊 Run task',
+        },
+        {
+            'hOt',
+            function()
+                require('overseer').toggle()
+            end,
+            desc = '󰐊 Toggle task list',
+        },
+    },
 }

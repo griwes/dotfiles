@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-pkill polybar
+set -euo pipefail
 
-for m in $(polybar --list-monitors | cut -d":" -f1); do
-    MONITOR=$m polybar --reload top &
-    MONITOR=$m polybar --reload bottom &
-done
-
+exec "$(dirname "$0")/reconcile-screens"

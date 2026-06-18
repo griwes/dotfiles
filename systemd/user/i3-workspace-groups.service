@@ -1,0 +1,8 @@
+[Unit]
+Description=i3 workspace groups server
+PartOf=i3-session.target
+
+[Service]
+ExecStart=%h/.local/bin/mise exec pipx:i3-workspace-groups -- i3-workspace-groups server
+Restart=on-failure
+RestartSec=5s

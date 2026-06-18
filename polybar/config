@@ -15,8 +15,9 @@ foreground-disabled = #838383
 monitor = ${env:MONITOR:}
 bottom = false
 width = 100%
-height = 25
+height = 30
 fixed-center = true
+enable-ipc = true
 
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -33,22 +34,20 @@ padding-right = 1
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = "iosevkanf-light:size=12;2"
-font-1 = "iosevkanf-semibold:size=12;2"
+font-0 = "iosevkanf-light:size=13.5;2"
+font-1 = "iosevkanf-semibold:size=13.5;2"
 
-modules-left =
-modules-center = title
-modules-right =
-
-tray-position = right
-tray-padding = 2
+modules-left = pulseaudio player-prev player-status player-next player
+modules-center = weather
+modules-right = wifi tray
 
 [bar/bottom]
 monitor = ${env:MONITOR:}
 bottom = true
 width = 100%
-height = 25
+height = 30
 fixed-center = true
+enable-ipc = true
 
 background = ${colors.background}
 foreground = ${colors.foreground}
@@ -65,15 +64,19 @@ padding-right = 1
 module-margin-left = 1
 module-margin-right = 1
 
-font-0 = "iosevkanf-light:size=12;2"
-font-1 = "iosevkanf-semibold:size=12;2"
+font-0 = "iosevkanf-light:size=13.5;2"
+font-1 = "iosevkanf-semibold:size=13.5;2"
 
-modules-left =
+modules-left = cpu memory
 modules-center = i3
 modules-right = power date
 
-[module/title]
-type = internal/xwindow
+
+[module/tray]
+type = internal/tray
+
+tray-padding = 2
+tray-size = 80%
 
 [module/i3]
 type = internal/i3
@@ -122,23 +125,224 @@ label-urgent-background = ${colors.background-alert}
 type = internal/battery
 
 full-at = 99
-battery = BAT0
-adapter = AC
+battery = ${env:POLYBAR_BATTERY:BAT0}
+adapter = ${env:POLYBAR_ADAPTER:AC}
 
 poll-interval = 5
 
-time-format = %k:%M h
+; see "man date" for details on how to format the time string
+; NOTE: if you want to use syntax tags here you need to use %%{...}
+; Default: %H:%M:%S
+time-format = %H:%M
 
-label-charging = BAT0: CHG %percentage%%%time%
-label-discharging = BAT0: DIS %percentage%%%time%
+format-charging = <animation-charging>  <label-charging>
+format-discharging = <ramp-capacity>  <label-discharging>
+format-low = <animation-low>  <label-low>
+
+label-charging = CHG %percentage%% (%time%, +%consumption% W)
+label-discharging = DIS %percentage%% (%time%, -%consumption% W)
+label-full =   %percentage%%
+label-low = BATTERY LOW %percentage%% (%time%, -%consumption% W)
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-4 = 
+animation-charging-framerate = 500
+
+animation-low-0 = 
+animation-low-1 =
+animation-low-framerate = 200
 
 [module/date]
 type = internal/date
 
 interval = 1.0
-label = %date% %time%
+label =   %date%   %time%
 
 date = %a %d %b %Y
 time = %r %Z
+
+[module/player-prev]
+type = custom/text
+
+label = 
+click-left = playerctl previous
+
+[module/player-status]
+type = custom/script
+tail = true
+
+exec = playerctl status --follow | sed --unbuffered -e 's/Playing/ /' -e 's/Paused/ /' -e 's/Stopped/ /'
+click-left = playerctl play-pause
+
+[module/player-next]
+type = custom/text
+
+label = 
+click-left = playerctl next
+
+[module/player]
+type = custom/script
+tail = true
+
+exec = playerctl metadata --format '{{ artist }} - {{ trunc(title, 25) }} - {{ custom:current }} / {{ custom:duration }}' --follow
+
+[module/pulseaudio]
+type = internal/pulseaudio
+
+use-ui-max = false
+
+; Interval for volume increase/decrease (in percent points)
+; Default: 5
+interval = 5
+
+; Reverses the increment/decrement on scroll event. Set this to true if you are
+; using natural scrolling option on your touchpad.
+; New in version 3.7.0
+; Default: false
+reverse-scroll = false
+
+; Available tags:
+;   <label-volume> (default)
+;   <ramp-volume>
+;   <bar-volume>
+format-volume = <ramp-volume> <label-volume> <bar-volume>
+
+; Available tags:
+;   <label-muted> (default)
+;   <ramp-volume>
+;   <bar-volume>
+;format-muted = <label-muted>
+
+; Available tokens:
+;   %percentage% (default)
+;   %decibels%
+;label-volume = %percentage%%
+label-volume = %percentage:3%%
+
+; Available tokens:
+;   %percentage% (default)
+;   %decibels%
+label-muted =   muted
+label-muted-foreground = #666
+
+; Only applies if <ramp-volume> is used
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+
+bar-volume-width = 12
+bar-volume-indicator = ╉
+bar-volume-fill = ━
+bar-volume-empty = ─
+
+; Right and Middle click
+click-right = pavucontrol
+; click-middle =
+
+[module/wifi]
+type = internal/network
+interface = ${env:POLYBAR_WIFI_INTERFACE:wlp0s20f3}
+
+ping-interval = 3
+
+format-connected = <ramp-signal>  <label-connected>
+format-disconnected = <label-disconnected>
+format-packetloss = <animation-packetloss>  <label-connected>
+
+label-connected = %essid:0:25:…% %downspeed:8%   %upspeed:8% 
+label-connected-foreground = #eefafa
+
+; Default: (none)
+label-disconnected = 󰣽
+label-disconnected-foreground = #66ffff
+
+; Default: (none)
+;label-packetloss = %essid%
+;label-packetloss-foreground = #eefafafa
+
+; Only applies if <ramp-signal> is used
+ramp-signal-0 = 󰣾
+ramp-signal-1 = 󰣴
+ramp-signal-2 = 󰣶
+ramp-signal-3 = 󰣸
+ramp-signal-4 = 󰣺
+
+; Only applies if <animation-packetloss> is used
+animation-packetloss-0 = ⚠
+animation-packetloss-0-foreground = #ffa64c
+animation-packetloss-1 = 📶
+animation-packetloss-1-foreground = #000000
+; Framerate in milliseconds
+animation-packetloss-framerate = 500
+
+[module/weather]
+type = custom/script
+
+exec = $HOME/dotfiles/polybar/scripts/weather.sh
+interval = 120
+label = %output%
+
+[module/cpu]
+type = internal/cpu
+
+interval = 0.5
+
+format = <label>  <ramp-coreload>
+
+label =   %percentage:3%%
+
+; Spacing (number of spaces, pixels, points) between individual per-core ramps
+ramp-coreload-spacing = 0
+ramp-coreload-0 = ▁
+ramp-coreload-0-foreground = #55aa55
+ramp-coreload-1 = ▂
+ramp-coreload-1-foreground = #84b050
+ramp-coreload-2 = ▃
+ramp-coreload-2-foreground = #a8b555
+ramp-coreload-3 = ▄
+ramp-coreload-3-foreground = #c6bb63
+ramp-coreload-4 = ▅
+ramp-coreload-4-foreground = #dcbb6e
+ramp-coreload-5 = ▆
+ramp-coreload-5-foreground = #e09655
+ramp-coreload-6 = ▇
+ramp-coreload-6-foreground = #db7158
+ramp-coreload-7 = █
+ramp-coreload-7-foreground = #c94f6d
+
+[module/memory]
+type = internal/memory
+
+interval = 3
+
+format = <label> <bar-used>
+
+label =   %percentage_used:3%% (%used%/%total%)
+
+bar-used-indicator =
+bar-used-width = 10
+bar-used-gradient = true
+bar-used-foreground-0 = #55aa55
+bar-used-foreground-1 = #7aaf51
+bar-used-foreground-2 = #98b351
+bar-used-foreground-3 = #b2b758
+bar-used-foreground-4 = #c9bb65
+bar-used-foreground-5 = #dbbf72
+bar-used-foreground-6 = #e0a35a
+bar-used-foreground-7 = #df8553
+bar-used-foreground-8 = #d8695c
+bar-used-foreground-9 = #c94f6d
+bar-used-fill = ▐
+bar-used-empty = ▐
+bar-used-empty-foreground = #444444
 
 ; vim:ft=dosini
