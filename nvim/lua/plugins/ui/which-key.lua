@@ -58,6 +58,8 @@ local keymap_family_spec = {
         { 'hr', group = 'Replace workbenches', icon = ' ' },
         { 'hS', group = 'Snippets', icon = ' ' },
         { 'hT', group = 'Tables and data views', icon = ' ' },
+        { 'hTc', group = 'Candela log analysis', icon = '󰗢 ' },
+        { 'hTl', group = 'Log highlighting', icon = ' ' },
         { 'ht', group = 'Pickers', icon = '󰱼 ' },
         { 'hz', group = 'Zoom/Focus/Context', icon = '󰅩 ' },
     },
