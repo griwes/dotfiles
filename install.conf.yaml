@@ -11,9 +11,12 @@
     - dotbot-plugins/desktop_entries.py
     - dotbot-plugins/login_shell.py
     - dotbot-plugins/mise.py
+    - dotbot-plugins/path_permissions.py
     - dotbot-plugins/systemd_user.py
 
 - defaults:
+    create:
+      mode: 0755
     link:
       create: true
       relink: true
@@ -88,6 +91,15 @@
       mode: 0700
     ~/.ssh/cm_sockets:
       mode: 0700
+
+- path_permissions:
+    ~/.config/systemd: 0755
+    ~/.config/systemd/user: 0755
+    ~/.local/share/applications: 0755
+    ~/.local/share/icons/dotfiles: 0755
+    ~/.local/share/mise/plugins: 0755
+    ~/.ssh: 0700
+    ~/.ssh/cm_sockets: 0700
 
 - clean:
     ~/:
