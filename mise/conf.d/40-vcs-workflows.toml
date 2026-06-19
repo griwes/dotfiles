@@ -1,0 +1,9 @@
+[tools]
+"cargo:git-delta" = "latest"
+"cargo:topgrade" = "latest"
+"cargo:wrkflw" = "latest"
+gh = "latest"
+"github:chmouel/lazyworktree" = "latest"
+"github:Wilfred/difftastic" = "latest"
+"go:github.com/stefanlogue/meteor" = "latest"
+"go:go.kenn.io/roborev/cmd/roborev" = "latest"

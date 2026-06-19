@@ -1,0 +1,4 @@
+[tools]
+"cargo:csvlens" = "latest"
+"pipx:numpy" = "latest"
+"pipx:yt-dlp" = "latest"

@@ -1,4 +1,0 @@
-[tools]
-go = "latest"
-python = "3.13.9"
-rust = "nightly"

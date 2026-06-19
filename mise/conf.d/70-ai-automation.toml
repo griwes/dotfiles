@@ -1,0 +1,8 @@
+[tools]
+"github:openai/codex" = { version = "latest", asset_pattern = "codex-x86_64-unknown-linux-musl.zst" }
+"go:github.com/isaacphi/mcp-language-server" = "latest"
+"npm:@github/copilot" = "latest"
+"npm:@upstash/context7-mcp" = "latest"
+"npm:@zed-industries/codex-acp" = "latest"
+"npm:oh-my-codex" = "0.18.8"
+"pipx:llmfit" = "latest"

@@ -11,53 +11,104 @@ then
 fi
 
 dot_dir="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+dotbot_dir="${DOTFILES_DOTBOT_DIR:-${XDG_CACHE_HOME:-${HOME}/.cache}/dotfiles/dotbot}"
+dotbot_bin="${dotbot_dir}/bin/dotbot"
+dotbot_args=()
+skip_github_login=0
 
-set -x
-
-echo Downloading mise and installing tools...
-curl -fsSL https://mise.run | zsh
-
-mkdir -p "${HOME}/.config" "${HOME}/.ssh/cm_sockets"
-ln -sfn "${dot_dir}/mise" "${HOME}/.config/mise"
-"${HOME}/.local/bin/mise" install
-
-simple_configs=(
-    atuin
-    dunst
-    i3
-    kitty
-    mise
-    neovide
-    nvim
-    polybar
-    rofi
-    systemd
-)
-
-declare -A special_configs=(
-    [git/config]="${HOME}/.gitconfig"
-    [ssh/config]="${HOME}/.ssh/config"
-    [starship/starship.toml]="${HOME}/.config/starship.toml"
-    [topgrade/topgrade.toml]="${HOME}/.config/topgrade.toml"
-    [zsh/zimrc]="${HOME}/.zimrc"
-    [zsh/zshrc]="${HOME}/.zshrc"
-)
-
-for config in "${simple_configs[@]}"
+while (($#))
 do
-    ln -sfn "${dot_dir}/${config}" "${HOME}/.config/${config}"
+    case "$1" in
+        --skip-github-login|--no-github-login)
+            skip_github_login=1
+            ;;
+        *)
+            dotbot_args+=("$1")
+            ;;
+    esac
+    shift
 done
 
-for key in "${!special_configs[@]}"
-do
-    ln -sfn "${dot_dir}/${key}" "${special_configs[${key}]}"
-done
-
-zsh_path="$(command -v zsh)"
-current_shell="$(getent passwd "${USER}" | awk -F':' '{ print $7 }')"
-if [[ "${current_shell}" != "${zsh_path}" ]]
+if ((skip_github_login))
 then
-    chsh -s "${zsh_path}"
+    export DOTFILES_SKIP_GITHUB_LOGIN=1
 fi
 
-echo Setup complete.
+log() {
+    printf '==> %s\n' "$*"
+}
+
+have_python3() {
+    command -v python3 >/dev/null 2>&1 && python3 - <<'PY' >/dev/null 2>&1
+import sys
+raise SystemExit(0 if sys.version_info >= (3, 7) else 1)
+PY
+}
+
+install_mise() {
+    if command -v mise >/dev/null 2>&1 || [[ -x "${HOME}/.local/bin/mise" ]]
+    then
+        return 0
+    fi
+
+    log 'Installing mise bootstrap binary'
+    if command -v curl >/dev/null 2>&1
+    then
+        curl -fsSL https://mise.run | sh
+    elif command -v wget >/dev/null 2>&1
+    then
+        wget -qO- https://mise.run | sh
+    else
+        echo 'Cannot install mise: neither curl nor wget is available.' >&2
+        return 1
+    fi
+}
+
+mise_bin() {
+    if command -v mise >/dev/null 2>&1
+    then
+        command -v mise
+    elif [[ -x "${HOME}/.local/bin/mise" ]]
+    then
+        printf '%s\n' "${HOME}/.local/bin/mise"
+    else
+        return 1
+    fi
+}
+
+ensure_dotbot() {
+    if [[ -x "${dotbot_bin}" ]]
+    then
+        return 0
+    fi
+
+    if ! command -v git >/dev/null 2>&1
+    then
+        echo 'Cannot bootstrap Dotbot: git is required.' >&2
+        return 1
+    fi
+
+    log "Fetching Dotbot into ${dotbot_dir}"
+    rm -rf "${dotbot_dir}"
+    mkdir -p "$(dirname "${dotbot_dir}")"
+    git clone --depth 1 --recurse-submodules https://github.com/anishathalye/dotbot "${dotbot_dir}"
+}
+
+run_dotbot() {
+    cd "${dot_dir}"
+    export PYTHONDONTWRITEBYTECODE=1
+
+    if have_python3
+    then
+        python3 "${dotbot_bin}" -d "${dot_dir}" -c install.conf.yaml "$@"
+        return
+    fi
+
+    install_mise
+    "$(mise_bin)" exec python@3 -- python "${dotbot_bin}" -d "${dot_dir}" -c install.conf.yaml "$@"
+}
+
+ensure_dotbot
+run_dotbot "${dotbot_args[@]}"
+
+log 'Setup complete.'

@@ -1,2 +1,5 @@
 *~
+__pycache__/
+*.pyc
+mise/mise.lock
 nvim/lazy-lock.json

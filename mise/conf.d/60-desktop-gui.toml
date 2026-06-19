@@ -1,0 +1,8 @@
+[tools]
+"github:kovidgoyal/kitty" = "latest"
+"github:Mastermindzh/tidal-hifi" = "latest"
+"github:neovide/neovide" = "nightly"
+"github:vencord/vesktop" = { version = "latest", asset_pattern = "vesktop-?.?.?.tar.gz" }
+"pipx:i3-workspace-groups" = "latest"
+"pipx:keeprofi" = "latest"
+"pipx:pywal" = "latest"

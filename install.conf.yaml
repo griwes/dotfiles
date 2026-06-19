@@ -1,0 +1,174 @@
+# Dotbot prototype for this dotfiles layout.
+#
+# Intent:
+# - Keep ordinary dotfile symlinks in Dotbot core directives.
+# - Use small local plugins for dotfiles-specific domains where raw shell/link
+#   blocks would be harder to review: desktop entries, per-unit systemd state,
+#   local mise plugins, and guarded login-shell changes.
+
+- plugins:
+    - dotbot-plugins/apt_packages.py
+    - dotbot-plugins/desktop_entries.py
+    - dotbot-plugins/login_shell.py
+    - dotbot-plugins/mise.py
+    - dotbot-plugins/systemd_user.py
+
+- defaults:
+    link:
+      create: true
+      relink: true
+
+- apt_packages:
+    install:
+      bootstrap:
+        - bash
+        - ca-certificates
+        - curl
+        - git
+        - gh
+        - gnupg
+        - python3
+        - sudo
+        - wget
+        - zsh
+      systemd:
+        - dbus-user-session
+        - systemd
+        - systemd-sysv
+      desktop-session:
+        - brightnessctl
+        - dunst
+        - feh
+        - fontconfig
+        - i3-wm
+        - libnotify-bin
+        - libatomic1
+        - network-manager
+        - network-manager-gnome
+        - picom
+        - playerctl
+        - polybar
+        - rofi
+        - x11-utils
+        - x11-xkb-utils
+        - x11-xserver-utils
+        - xdg-utils
+      audio:
+        - alsa-utils
+        - pavucontrol
+        - pipewire
+        - pipewire-pulse
+        - pulseaudio-utils
+        - wireplumber
+      build-deps:
+        - build-essential
+        - clang
+        - libdbus-1-dev
+        - libpipewire-0.3-dev
+        - qt6-svg-dev
+        - libssl-dev
+        - linux-libc-dev
+        - pkg-config
+        - qt6-base-dev
+        - qt6-tools-dev
+        - unzip
+        - xz-utils
+        - zstd
+      system-services:
+        - tuned
+
+- create:
+    ~/.config:
+    ~/.config/systemd:
+    ~/.config/systemd/user:
+    ~/.local/share/applications:
+    ~/.local/share/icons/dotfiles:
+    ~/.local/share/mise/plugins:
+    ~/.ssh:
+      mode: 0700
+    ~/.ssh/cm_sockets:
+      mode: 0700
+
+- clean:
+    ~/:
+    ~/.config:
+    ~/.local/share/applications:
+    ~/.local/share/icons/dotfiles:
+
+- link:
+    ~/.config/atuin:
+    ~/.config/dunst:
+    ~/.config/i3:
+    ~/.config/kitty:
+    ~/.config/mise:
+    ~/.config/neovide:
+    ~/.config/nvim:
+    ~/.config/polybar:
+    ~/.config/rofi:
+    ~/.config/starship.toml: starship/starship.toml
+    ~/.config/topgrade.toml: topgrade/topgrade.toml
+    ~/.config/topgrade.d: topgrade/topgrade.d
+    ~/.gitconfig: git/config
+    ~/.ssh/config: ssh/config
+    ~/.zimrc: zsh/zimrc
+    ~/.zshrc: zsh/zshrc
+
+- desktop_entries:
+    source: applications
+    target: ~/.local/share/applications
+    icons:
+      source: applications/icons
+      target: ~/.local/share/icons/dotfiles
+
+- systemd_user:
+    target: ~/.config/systemd/user
+    units:
+      source: systemd/user
+      link:
+        - atuin-daemon.service
+        - atuin-daemon.socket
+        - i3-session.target
+        - i3-workspace-groups.service
+        - jolt-daemon.service
+        - keyboard-layout.service
+        - nm-applet.service
+        - picom.service
+        - polybar-screen-watcher.service
+        - polybar.service
+        - polybar@.service
+        - tuned-switcher.service
+        - wallpaper-rotate.service
+    daemon_reload: true
+    enable:
+      - atuin-daemon.service
+      - atuin-daemon.socket
+    mask:
+      - gnome-keyring-daemon.service
+      - gnome-keyring-daemon.socket
+
+- mise:
+    bootstrap: true
+    github_auth:
+      provider: gh
+      login: interactive
+      skip_env: DOTFILES_SKIP_GITHUB_LOGIN
+      git_protocol_env: DOTFILES_GH_GIT_PROTOCOL
+      default_git_protocol: ssh
+    trust:
+      - mise/config.toml
+      - mise/conf.d/*.toml
+    preinstall:
+      - cmake
+      - node
+      - rust@stable
+    plugins:
+      tuned-switcher: mise/plugins/tuned-switcher
+    install: true
+
+- login_shell:
+    shell: zsh
+    allowed_users:
+      - griwes
+      - mdominiak
+    override_env: GRIWES_DOTFILES_DISREGARD_USERNAME
+    allow_noninteractive_env: DOTFILES_ALLOW_CHSH
