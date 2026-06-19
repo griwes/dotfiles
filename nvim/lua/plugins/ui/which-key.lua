@@ -36,6 +36,9 @@ local keymap_family_spec = {
     {
         mode = { 'n', 'x', 'o', 'v' },
         { 'h', group = 'Previews and UI actions', icon = '󰕌 ' },
+        { 'ha', group = 'Annotations and markers', icon = '󰃀 ' },
+        { 'hag', group = 'Marker groups', icon = '󰃀 ' },
+        { 'hat', group = 'Marker pickers', icon = '󰱼 ' },
         { 'hb', group = 'Buffers', icon = ' ' },
         { 'hc', group = 'CodeDiff and conflicts', icon = '󰕚 ' },
         { 'hC', group = 'Bulk conflict actions', icon = '󰕚 ' },
