@@ -45,6 +45,7 @@ local keymap_family_spec = {
         { 'hg', group = 'Git hunks and buffers', icon = ' ' },
         { 'hl', group = 'LSP previews', icon = '󰔨 ' },
         { 'hlc', group = 'LSP call previews', icon = ' ' },
+        { 'hL', group = 'Lua console', icon = ' ' },
         { 'hm', group = 'Markdown and notes', icon = '󰍔 ' },
         { 'hmt', group = 'Markdown tables', icon = '󰹹 ' },
         { 'hmta', group = 'Markdown table creation', icon = '󰹹 ' },
