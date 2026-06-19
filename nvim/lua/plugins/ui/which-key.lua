@@ -54,6 +54,7 @@ local keymap_family_spec = {
         { 'hq', group = 'Quickfix windows', icon = '󰁨 ' },
         { 'hr', group = 'Replace workbenches', icon = ' ' },
         { 'hS', group = 'Snippets', icon = ' ' },
+        { 'hT', group = 'Tables and data views', icon = ' ' },
         { 'ht', group = 'Pickers', icon = '󰱼 ' },
         { 'hz', group = 'Zoom/Focus/Context', icon = '󰅩 ' },
     },
